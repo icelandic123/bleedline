@@ -164,24 +164,33 @@
   };
   BL.blobBytes = function (blob) { return blob.arrayBuffer().then(function (b) { return new Uint8Array(b); }); };
 
-  // Privacy-friendly analytics, only when configured.
-  BL.track = function (name, label) {
-    try {
-      if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: 'event/' + name + (label ? '/' + label : ''), event: true });
-    } catch (e) {}
-  };
+  // Visitor counts: a public, cookie-free counter (abacus.jasoncameron.dev) that stores numbers only.
+  // It only runs on the live host, so local builds and tests don't add to the counts.
   var an = cfg.analytics || {};
+  var live = !!(an.counterNamespace && cfg.host && location.hostname === cfg.host);
+  function hit(key) {
+    if (!live) return;
+    try { fetch('https://abacus.jasoncameron.dev/hit/' + an.counterNamespace + '/' + key, { mode: 'cors', keepalive: true }).catch(function () {}); } catch (e) {}
+  }
+  BL.track = function (name, label) {
+    hit('ev-' + String(name + (label ? '-' + label : '')).toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 60));
+  };
+  (function countVisit() {
+    if (!live) return;
+    var rel = location.pathname.indexOf(cfg.basePath) === 0 ? location.pathname.slice(cfg.basePath.length) : location.pathname;
+    var page = rel.split('/').filter(Boolean)[0] || 'home';
+    if (page === 'index.html') page = 'home';
+    hit('views');
+    hit('page-' + page.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 60));
+    // A visitor is one browser per day.
+    var last = BL.store.get('counted', 0);
+    if (Date.now() - last > 24 * 3600 * 1000) { BL.store.set('counted', Date.now()); hit('visitors'); }
+  })();
   if (an.cloudflareToken) {
     var s = document.createElement('script');
     s.defer = true; s.src = 'https://static.cloudflareinsights.com/beacon.min.js';
     s.setAttribute('data-cf-beacon', JSON.stringify({ token: an.cloudflareToken }));
     document.head.appendChild(s);
-  }
-  if (an.goatcounterCode) {
-    var g = document.createElement('script');
-    g.async = true; g.src = 'https://gc.zgo.at/count.js';
-    g.setAttribute('data-goatcounter', 'https://' + an.goatcounterCode + '.goatcounter.com/count');
-    document.head.appendChild(g);
   }
 
   // Report errors to the person rather than failing silently.

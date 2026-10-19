@@ -67,6 +67,8 @@
       '</div>';
     document.body.appendChild(back);
     modalEl = back;
+    var buyLink = back.querySelector('a.btn.pro');
+    if (buyLink) buyLink.addEventListener('click', function () { BL.track('buy-click', 'modal'); });
     var input = back.querySelector('#pro-key');
     setTimeout(function () { input.focus(); }, 30);
     back.addEventListener('click', function (e) { if (e.target === back || e.target.classList.contains('close')) closeModal(); });

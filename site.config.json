@@ -1,7 +1,7 @@
 {
   "name": "Bleedline",
   "tagline": "Free print-ready file tools for self-publishers and print-on-demand sellers",
-  "baseUrl": "https://example.github.io/bleedline/",
+  "baseUrl": "https://icelandic123.github.io/bleedline/",
   "gumroad": {
     "productId": "",
     "productUrl": "",
@@ -9,8 +9,8 @@
     "tipUrl": ""
   },
   "analytics": {
-    "cloudflareToken": "",
-    "goatcounterCode": ""
+    "counterNamespace": "bleedline-icelandic123",
+    "cloudflareToken": ""
   },
   "googleSiteVerification": "",
   "contactEmail": ""

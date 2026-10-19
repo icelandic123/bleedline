@@ -41,7 +41,7 @@ const tools = fs.readdirSync(toolsDir)
 const bySlug = Object.fromEntries(tools.map((t) => [t.slug, t]));
 
 const version = crypto.createHash('sha1').update(String(Date.now())).digest('hex').slice(0, 8);
-const publicConfig = { gumroad: config.gumroad, analytics: config.analytics, name: config.name };
+const publicConfig = { gumroad: config.gumroad, analytics: config.analytics, name: config.name, host: new URL(config.baseUrl).hostname, basePath: new URL(config.baseUrl).pathname };
 
 function footLinks(cat, root) {
   return tools.filter((t) => t.category === cat).map((t) => `<a href="${root}${t.slug}/">${esc(t.h1)}</a>`).join('\n      ');
