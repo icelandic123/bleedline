@@ -1,0 +1,192 @@
+<style>
+.tool > .preview { min-width: 0; }
+.dpi-thumb { min-height: 160px; }
+.dpi-thumb img { max-height: 320px; width: auto; }
+.dpi-file { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin: 10px 0 4px; }
+.dpi-file strong { overflow-wrap: anywhere; }
+.dpi-src { list-style: none; padding: 0; margin: 6px 0 0; font-size: .88rem; }
+.dpi-src li { padding: 3px 0; border-bottom: 1px dashed var(--border); display: flex; justify-content: space-between; gap: 10px; }
+.dpi-src li span:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.verdict { border-radius: 8px; padding: 12px 14px; margin-top: 10px; }
+.verdict .big { font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.verdict.g5 { background: var(--ok-soft); color: var(--ok); }
+.verdict.g4 { background: var(--ok-soft); color: var(--ok); }
+.verdict.g3 { background: var(--accent-soft); color: var(--accent); }
+.verdict.g2 { background: var(--warn-soft); color: var(--warn); }
+.verdict.g1, .verdict.g0 { background: var(--danger-soft); color: var(--danger); }
+.verdict p { margin: .3em 0 0; color: var(--text); font-size: .9rem; }
+.q-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 0; background: currentColor; }
+.q5, .q4 { color: var(--ok); } .q3 { color: var(--accent); } .q2 { color: var(--warn); } .q1, .q0 { color: var(--danger); }
+#sizes td:first-child, .batch-table td, .batch-table th { white-space: nowrap; }
+.batch-table td:first-child { white-space: normal; overflow-wrap: anywhere; min-width: 120px; }
+@media (max-width: 520px) { #sizes th:last-child, #sizes td:last-child { display: none; } }
+.batch-table tr.sel td { background: var(--accent-soft); }
+.batch-table button { font: inherit; background: none; border: 0; color: var(--accent); cursor: pointer; text-decoration: underline; padding: 0; text-align: left; }
+.inline-inputs { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+.inline-inputs .field { margin-bottom: 0; flex: 1 1 90px; }
+.dpi-quick { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.dpi-quick button { font: inherit; font-size: .85rem; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); cursor: pointer; }
+.dpi-quick button:hover { border-color: var(--accent); }
+</style>
+
+<div class="tool">
+  <form class="panel" id="dpi-form" autocomplete="off" onsubmit="return false">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose image files">
+      <input type="file" id="file" accept="image/png,image/jpeg,image/webp,image/tiff,.png,.jpg,.jpeg,.webp,.tif,.tiff" multiple>
+      <strong>Drop an image here</strong>
+      <span class="muted small">or click to choose, or paste (Ctrl+V). PNG, JPEG, WebP or TIFF.</span>
+    </div>
+    <p class="small muted" style="margin:8px 0 14px">Your image stays on your device. Nothing is uploaded.</p>
+
+    <h2 style="font-size:1rem;margin:0 0 8px">Will it print well at this size?</h2>
+    <div class="field">
+      <label for="target">Print size</label>
+      <select id="target" name="target">
+        <optgroup label="Photo and poster sizes (inches)">
+          <option value="4x6">4 × 6 in</option>
+          <option value="5x7">5 × 7 in</option>
+          <option value="8x10" selected>8 × 10 in</option>
+          <option value="8.5x11">8.5 × 11 in (US Letter)</option>
+          <option value="11x14">11 × 14 in</option>
+          <option value="12x18">12 × 18 in</option>
+          <option value="16x20">16 × 20 in</option>
+          <option value="18x24">18 × 24 in</option>
+          <option value="24x36">24 × 36 in</option>
+        </optgroup>
+        <optgroup label="ISO paper sizes">
+          <option value="A5">A5 (148 × 210 mm)</option>
+          <option value="A4">A4 (210 × 297 mm)</option>
+          <option value="A3">A3 (297 × 420 mm)</option>
+          <option value="A2">A2 (420 × 594 mm)</option>
+        </optgroup>
+        <optgroup label="Print-on-demand">
+          <option value="shirt">T-shirt print area 15 × 18 in</option>
+          <option value="shirt12">T-shirt print area 12 × 16 in</option>
+        </optgroup>
+        <option value="custom">Custom size…</option>
+      </select>
+    </div>
+    <div class="inline-inputs" id="custom-row" hidden>
+      <div class="field"><label for="cw">Width</label><input id="cw" name="cw" type="number" min="0.1" step="any" value="10"></div>
+      <div class="field"><label for="ch">Height</label><input id="ch" name="ch" type="number" min="0.1" step="any" value="10"></div>
+      <div class="field" style="flex:0 0 auto">
+        <span class="label">Unit</span>
+        <div class="seg" role="radiogroup" aria-label="Unit">
+          <label><input type="radio" name="unit" value="in" checked>in</label>
+          <label><input type="radio" name="unit" value="cm">cm</label>
+          <label><input type="radio" name="unit" value="mm">mm</label>
+        </div>
+      </div>
+    </div>
+    <label class="check"><input type="checkbox" name="rotate" id="rotate" checked> Turn the size to match the image (portrait or landscape)</label>
+
+    <h2 style="font-size:1rem;margin:18px 0 8px">Save a copy with a new DPI</h2>
+    <div class="field">
+      <label for="newdpi">DPI to write into the file</label>
+      <input id="newdpi" name="newdpi" type="number" min="1" max="65535" step="1" value="300">
+      <div class="dpi-quick" aria-label="Common values">
+        <button type="button" data-dpi="300">300</button>
+        <button type="button" data-dpi="240">240</button>
+        <button type="button" data-dpi="150">150</button>
+        <button type="button" data-dpi="72">72</button>
+        <button type="button" id="fit-dpi" title="Pick the DPI that makes the image open at the print size above">Match the print size</button>
+      </div>
+      <div class="hint">Only the label changes. The pixels, and so the quality, stay exactly the same.</div>
+    </div>
+    <button class="btn block" type="button" id="save" disabled>Save a copy at 300 DPI</button>
+    <div id="save-msg" aria-live="polite"></div>
+  </form>
+
+  <div class="preview">
+    <div class="panel" id="result-panel">
+      <div id="empty" class="muted">
+        <div class="canvas-box plain dpi-thumb"><span>Your image will appear here.</span></div>
+      </div>
+      <div id="result" hidden>
+        <div class="canvas-box dpi-thumb" id="thumb"></div>
+        <div class="dpi-file"><strong id="fname"></strong><span class="muted small" id="fmeta"></span></div>
+        <div class="result-grid" id="stats" style="margin-top:10px"></div>
+        <div id="notes"></div>
+        <details style="margin-top:8px"><summary class="small">Where the DPI is stored in this file</summary><ul class="dpi-src" id="sources"></ul></details>
+        <h3 style="margin:18px 0 6px;font-size:1rem">Largest print size</h3>
+        <div class="table-wrap"><table id="sizes"><thead><tr><th>At</th><th>Inches</th><th>Centimetres</th><th>Good for</th></tr></thead><tbody></tbody></table></div>
+        <div id="verdict"></div>
+      </div>
+      <div id="load-msg" aria-live="polite"></div>
+    </div>
+
+    <div class="panel" id="batch-panel" hidden>
+      <h2>All files <span class="badge pro">Pro</span></h2>
+      <div class="table-wrap"><table class="batch-table" id="batch-table"><thead><tr><th>File</th><th>Pixels</th><th>Stored DPI</th><th>Max at 300 DPI</th><th>Target</th></tr></thead><tbody></tbody></table></div>
+      <div class="progress" id="batch-progress" hidden><div></div></div>
+      <div class="btn-row"><button class="btn pro" type="button" id="batch-zip">Download all at 300 DPI (zip + CSV)</button><button class="btn ghost" type="button" id="batch-clear">Clear</button></div>
+      <div id="batch-msg" aria-live="polite"></div>
+    </div>
+
+    <div class="pro-box hide-if-pro" id="pro-hint" hidden>
+      <p><strong>Checking a folder of designs?</strong> You dropped <span id="pro-count"></span> files. The free version checks one at a time (the first is shown). Pro checks them all and downloads every DPI-fixed copy in one zip with a CSV report.</p>
+      <button class="btn pro" type="button" data-pro-open="Batch DPI checking and fixing is part of Bleedline Pro.">See Pro</button>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+  <h2>How to use it</h2>
+  <ol>
+    <li>Drop your image on the box, click it to choose a file, or paste an image you copied.</li>
+    <li>Read the pixel size and the <strong>largest print size</strong> table. The 300 DPI row is the size it prints sharply at, even up close.</li>
+    <li>Pick the size you want to print (or type your own) to get a plain verdict: excellent, good, acceptable or too small.</li>
+    <li>If a printer or marketplace asks for a 300 DPI file, click <strong>Save a copy at 300 DPI</strong>. You get the same image with the new label, nothing else changed.</li>
+  </ol>
+
+  <h2>The DPI number in a file is only a label</h2>
+  <p>A digital image is a grid of pixels. That's all the printer gets. The "DPI" (or "resolution") saved in the file is a single number that tells apps like Photoshop, Canva or Word how many of those pixels to fit into one inch when they place the image. Change it from 72 to 300 and the image opens smaller in those apps, but not one pixel changes and the print looks identical at any given size.</p>
+  <p>So the question that matters is never "is this file 300 DPI?" but "<strong>does it have enough pixels for the size I want?</strong>" The answer is a division: pixels ÷ print size in inches = the resolution you'll actually get. A 3000 × 2400 pixel image printed 10 × 8 in gets 300 pixels per inch. Printed 20 × 16 in, it gets 150, whatever the file says.</p>
+  <p>That is also why this tool's "save a copy" never resamples. Turning a 72 DPI label into 300 is a few bytes in the header. Making the image genuinely bigger means adding pixels (upscaling), which can't add detail that was never captured.</p>
+
+  <h2>DPI and PPI</h2>
+  <p><strong>PPI</strong>, pixels per inch, is the density of pixels in an image at a given print size. <strong>DPI</strong>, dots per inch, originally meant the ink dots a printer lays down, and a printer uses many dots to reproduce one pixel's color. In practice everyone, including Photoshop's "Resolution" box and the field stored in PNG and JPEG files, uses DPI to mean PPI. When a print shop or marketplace asks for "300 DPI", it means 300 image pixels for every inch of the printed size.</p>
+
+  <h2>Why 300 DPI, and when less is fine</h2>
+  <p>At reading distance (about 30 cm or 12 in) most people can't make out detail finer than roughly 300 pixels per inch, so 300 is the standard for anything held in the hand: photos, cards, book covers and pages. Bigger prints are seen from further away, so they need fewer pixels per inch to look just as sharp. A poster on a wall at 150 to 200 DPI looks fine from a couple of steps back.</p>
+  <ul>
+    <li><span class="q-dot q5"></span><strong>300 and up</strong>: sharp even under close inspection.</li>
+    <li><span class="q-dot q4"></span><strong>240 to 300</strong>: very hard to tell apart from 300.</li>
+    <li><span class="q-dot q3"></span><strong>200 to 240</strong>: good for prints and posters seen at arm's length.</li>
+    <li><span class="q-dot q2"></span><strong>150 to 200</strong>: acceptable for posters, canvases and most apparel. Many print-on-demand printers accept 150 as their minimum.</li>
+    <li><span class="q-dot q1"></span><strong>Below 150</strong>: soft or visibly pixelated up close. Only use it for large prints seen from far away.</li>
+  </ul>
+
+  <h2>Pixels you need for common print sizes</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Print size</th><th>At 300 DPI</th><th>At 150 DPI</th></tr></thead>
+      <tbody>
+        <tr><td>4 × 6 in</td><td>1200 × 1800 px</td><td>600 × 900 px</td></tr>
+        <tr><td>5 × 7 in</td><td>1500 × 2100 px</td><td>750 × 1050 px</td></tr>
+        <tr><td>8 × 10 in</td><td>2400 × 3000 px</td><td>1200 × 1500 px</td></tr>
+        <tr><td>8.5 × 11 in</td><td>2550 × 3300 px</td><td>1275 × 1650 px</td></tr>
+        <tr><td>11 × 14 in</td><td>3300 × 4200 px</td><td>1650 × 2100 px</td></tr>
+        <tr><td>12 × 18 in</td><td>3600 × 5400 px</td><td>1800 × 2700 px</td></tr>
+        <tr><td>16 × 20 in</td><td>4800 × 6000 px</td><td>2400 × 3000 px</td></tr>
+        <tr><td>18 × 24 in</td><td>5400 × 7200 px</td><td>2700 × 3600 px</td></tr>
+        <tr><td>24 × 36 in</td><td>7200 × 10800 px</td><td>3600 × 5400 px</td></tr>
+        <tr><td>A5 (148 × 210 mm)</td><td>1748 × 2480 px</td><td>874 × 1240 px</td></tr>
+        <tr><td>A4 (210 × 297 mm)</td><td>2480 × 3508 px</td><td>1240 × 1754 px</td></tr>
+        <tr><td>A3 (297 × 420 mm)</td><td>3508 × 4961 px</td><td>1754 × 2480 px</td></tr>
+        <tr><td>A2 (420 × 594 mm)</td><td>4961 × 7016 px</td><td>2480 × 3508 px</td></tr>
+        <tr><td>T-shirt area 15 × 18 in</td><td>4500 × 5400 px</td><td>2250 × 2700 px</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Where the DPI is stored, and why apps disagree</h2>
+  <p>Each format keeps the resolution in its own place, and a file can carry more than one:</p>
+  <ul>
+    <li><strong>PNG</strong>: the <code>pHYs</code> chunk, stored as pixels per metre (300 DPI is 11811 pixels per metre). Many PNGs have no pHYs at all, and apps then assume 72 or 96.</li>
+    <li><strong>JPEG</strong>: the JFIF header near the start of the file, the EXIF block written by cameras and phones, and a Photoshop resolution block. They can disagree, for example JFIF saying 96 and EXIF saying 240. Photoshop, Windows and macOS each pick a different one first, which is why the same file can open at different sizes in different apps. This tool shows all of them and the saved copy sets every one to the same value.</li>
+    <li><strong>TIFF</strong>: the XResolution, YResolution and ResolutionUnit tags.</li>
+    <li><strong>WebP</strong>: no resolution field of its own. The tool saves WebP files as PNG (lossless) with the DPI you choose, since few print services accept WebP anyway.</li>
+  </ul>
+  <p>Some apps and services resize on import by this label, so a 300 DPI label can still be worth setting. It just never replaces having the pixels.</p>
+</section>

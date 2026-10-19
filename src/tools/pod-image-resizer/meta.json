@@ -1,0 +1,34 @@
+{
+  "slug": "pod-image-resizer",
+  "category": "pod",
+  "order": 2,
+  "title": "Print-on-Demand Image Resizer: Redbubble, TeePublic, Etsy Sizes",
+  "h1": "Print-on-demand image resizer",
+  "description": "Resize designs to exact print-on-demand and Etsy sizes: transparent padding or crop, top alignment for shirts, 300 DPI PNG or JPEG. Free, in your browser.",
+  "intro": "Pick a marketplace preset or type a size, and get a file with the exact pixel dimensions: padded with transparency for shirts, or cropped to fill for posters and listing photos. High-quality resampling, transparency kept, 300 DPI set in the file.",
+  "card": "Exact-size print files for Redbubble, TeePublic, Spring, Printful and Etsy photos.",
+  "free": "One image into one preset at a time, any size",
+  "pro": "Many images into many presets in one go, downloaded as a zip",
+  "proFeature": true,
+  "scripts": ["assets/image.js"],
+  "related": ["image-dpi-checker", "transparent-png-trimmer"],
+  "lastReviewed": "2026-10-19",
+  "sources": [
+    {"name": "Redbubble: Dimensions & Format", "url": "https://help.redbubble.com/hc/en-us/articles/202270679-Dimensions-Format"},
+    {"name": "Redbubble: designing stickers", "url": "https://help.redbubble.com/hc/en-us/articles/360034868212-How-do-I-design-for-stickers"},
+    {"name": "TeePublic: product dimensions", "url": "https://www.teepublic.com/blog/designing-for-specific-product-dimensions"},
+    {"name": "Spring: design requirements", "url": "https://kb.spri.ng/creators/articles/design-requirements-file-formatting-tips-faq.html"},
+    {"name": "Printful: T-shirt design placement", "url": "https://www.printful.com/blog/t-shirt-design-placement-guide"},
+    {"name": "Spreadshop: pixel graphics", "url": "https://spreadshop.com/helpcenter/create-designs/optimizing-pixel-graphics"},
+    {"name": "Etsy: image requirements", "url": "https://help.etsy.com/hc/en-us/articles/115015663347-Requirements-and-Best-Practices-for-Images-in-Your-Etsy-Shop"}
+  ],
+  "faq": [
+    {"q": "Should I pad or crop my design?", "a": "Pad (fit inside) for anything printed on a garment, sticker or mug: the whole design stays visible and the extra space is transparent, so nothing prints there. Crop (fill) for posters, art prints, canvases and listing photos, where the image should cover the whole area edge to edge."},
+    {"q": "Why does the tool put shirt designs at the top?", "a": "Printers place the file's top edge near the collar. If a wide design sits in the middle of a tall canvas, it prints low on the chest, closer to the stomach. Aligning to the top keeps it where people expect a chest print. Switch to center if you want it lower on purpose."},
+    {"q": "Can I make a small image big enough for a shirt?", "a": "You can make the file the right pixel size, and the tool does it with a smooth bicubic filter, but upscaling can't add detail that isn't there. Above about 1.5 times the result looks soft when printed. The tool tells you how much it is upscaling so you can decide. Redrawing or exporting the design bigger from your design app is always better."},
+    {"q": "Does it keep transparency?", "a": "Yes. PNG output keeps the alpha channel and resamples in premultiplied alpha, so edges don't get dark or light halos. JPEG has no transparency, so JPEG output fills transparent areas with the background color you pick (white by default)."},
+    {"q": "What DPI does the output have?", "a": "PNG and JPEG files are saved with 300 DPI in the file by default (you can change it). Pixel size is what platforms check; the DPI label matters only to apps that size images by it."},
+    {"q": "Why isn't there a Merch on Demand preset?", "a": "Amazon publishes its artwork specs only behind a seller login, so we could not check them against an official page. The size most sellers quote, 4500 × 5400 px, is the same as the 15 × 18 in at 300 DPI preset, but check your dashboard before you rely on it."},
+    {"q": "Is my artwork uploaded?", "a": "No. Resizing runs in your browser and the file is saved straight to your device. Nothing is sent anywhere."}
+  ]
+}

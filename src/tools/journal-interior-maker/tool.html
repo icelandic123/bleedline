@@ -1,0 +1,301 @@
+<style>
+.ji-sec { display: grid; grid-template-columns: 1.4rem minmax(0, 1fr) 5.2rem 2.4rem; gap: 6px; align-items: center; margin-bottom: 8px; }
+.ji-sec.single { grid-template-columns: minmax(0, 1fr); }
+.ji-sec .num { color: var(--muted); font-size: .85rem; text-align: right; }
+.ji-sec .rest { font-size: .78rem; color: var(--muted); line-height: 1.2; }
+.ji-sec .del { min-height: 36px; padding: 4px; }
+.ji-summary { font-size: .8rem; color: var(--muted); margin: 4px 0 10px; }
+.ji-opts { border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 4px; }
+.ji-opts h3 { font-size: .9rem; margin: 0 0 8px; }
+.ji-unit { display: grid; grid-template-columns: minmax(0, 1fr) 5rem; gap: 6px; }
+.ji-nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.ji-nav input[type=range] { flex: 1; min-width: 120px; }
+.ji-nav .ji-where { font-size: .85rem; color: var(--muted); min-width: 9.5em; font-variant-numeric: tabular-nums; }
+.ji-nav .btn { min-height: 36px; padding: 4px 12px; }
+.ji-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .8rem; color: var(--muted); margin-top: 8px; }
+.ji-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; border: 1px solid var(--border); }
+#ji-box { min-height: 240px; padding: 10px; }
+#ji-box canvas { max-height: none; }
+.ji-sides { display: flex; justify-content: space-around; font-size: .78rem; color: var(--muted); margin-top: 4px; text-align: center; }
+.ji-export-msg { font-size: .85rem; }
+</style>
+<div class="tool">
+  <form id="ji-form" autocomplete="off" onsubmit="return false">
+    <div class="panel">
+      <h2>Book</h2>
+      <div class="field">
+        <label for="trim">Trim size</label>
+        <select id="trim" name="trim"></select>
+      </div>
+      <div class="field">
+        <span class="label" id="bleed-l">Bleed</span>
+        <div class="seg" role="radiogroup" aria-labelledby="bleed-l">
+          <label><input type="radio" name="bleed" value="no" checked>No bleed</label>
+          <label><input type="radio" name="bleed" value="yes">Bleed</label>
+        </div>
+        <div class="hint">Only needed if something runs off the page edge, such as full-bleed lines.</div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="pages">Page count</label>
+          <input id="pages" name="pages" type="number" min="24" max="828" step="2" value="120" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="extra">Extra margin (in)</label>
+          <input id="extra" name="extra" type="number" min="0" max="1.5" step="0.0625" value="0.125" inputmode="decimal">
+        </div>
+      </div>
+      <div class="small muted" style="margin-top:-6px;font-size:.8rem">24 to 828 pages, always even: each sheet is two pages. The extra margin is added on top of KDP's minimum on every side; 0 puts lines right at the limit.</div>
+    </div>
+
+    <div class="panel">
+      <h2>Pages</h2>
+      <div id="ji-sections"></div>
+      <div class="ji-summary" id="ji-summary"></div>
+      <button type="button" class="btn ghost" id="ji-add">+ Add a section <span class="badge pro">Pro</span></button>
+      <p class="hint small muted" style="margin:6px 0 0">Sections let you combine styles in one book, for example 100 lined pages and then 20 graph pages.</p>
+
+      <div class="ji-opts" data-for="custom">
+        <h3>Custom ruling</h3>
+        <div class="field">
+          <label for="rule-sp">Line spacing</label>
+          <div class="ji-unit"><input id="rule-sp" name="ruleSp" type="number" min="0.1" step="0.1" value="8" inputmode="decimal"><select id="rule-u" name="ruleU" aria-label="Unit for line spacing"><option value="mm">mm</option><option value="in">in</option></select></div>
+        </div>
+      </div>
+      <div class="ji-opts" data-for="dot">
+        <h3>Dot grid</h3>
+        <div class="row">
+          <div class="field">
+            <label for="dot-sp">Dot spacing</label>
+            <div class="ji-unit"><input id="dot-sp" name="dotSp" type="number" min="0.1" step="0.5" value="5" inputmode="decimal"><select id="dot-u" name="dotU" aria-label="Unit for dot spacing"><option value="mm">mm</option><option value="in">in</option></select></div>
+          </div>
+          <div class="field">
+            <label for="dot-size">Dot size (pt)</label>
+            <input id="dot-size" name="dotSize" type="number" min="0.3" max="4" step="0.1" value="1.2" inputmode="decimal">
+          </div>
+        </div>
+      </div>
+      <div class="ji-opts" data-for="graph">
+        <h3>Graph paper</h3>
+        <div class="row">
+          <div class="field">
+            <label for="grid-sp">Square size</label>
+            <div class="ji-unit"><input id="grid-sp" name="gridSp" type="number" min="0.1" step="0.05" value="0.25" inputmode="decimal"><select id="grid-u" name="gridU" aria-label="Unit for square size"><option value="in">in</option><option value="mm">mm</option></select></div>
+          </div>
+          <div class="field">
+            <label for="grid-major">Darker line every</label>
+            <select id="grid-major" name="gridMajor"><option value="0">Never</option><option value="4">4 squares</option><option value="5">5 squares</option><option value="10">10 squares</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="ji-opts" data-for="handwriting">
+        <h3>Handwriting practice</h3>
+        <div class="field">
+          <label for="hw-row">Letter height (top line to baseline)</label>
+          <select id="hw-row" name="hwRow"><option value="0.375">3/8 in (older children)</option><option value="0.5" selected>1/2 in (ages 5 to 7)</option><option value="0.625">5/8 in</option><option value="0.75">3/4 in</option><option value="1">1 in (beginners)</option></select>
+        </div>
+      </div>
+      <div class="ji-opts" data-for="music">
+        <h3>Music staff</h3>
+        <div class="field">
+          <label for="staves">Staves per page</label>
+          <input id="staves" name="staves" type="number" min="3" max="16" step="1" value="10" inputmode="numeric">
+        </div>
+      </div>
+      <div class="ji-opts" data-for="daily weekly">
+        <h3>Planner</h3>
+        <div class="row">
+          <div class="field">
+            <label for="week-start">Week starts on</label>
+            <select id="week-start" name="weekStart"><option value="mon">Monday</option><option value="sun">Sunday</option></select>
+          </div>
+          <div class="field" data-for="daily">
+            <label for="clock">Time format</label>
+            <select id="clock" name="clock"><option value="12">6 am</option><option value="24">06:00</option></select>
+          </div>
+        </div>
+        <div class="row" data-for="daily">
+          <div class="field">
+            <label for="day-from">Schedule from</label>
+            <select id="day-from" name="dayFrom"></select>
+          </div>
+          <div class="field">
+            <label for="day-to">to</label>
+            <select id="day-to" name="dayTo"></select>
+          </div>
+        </div>
+      </div>
+      <div class="ji-opts" data-for="log">
+        <h3>Log table</h3>
+        <div class="field">
+          <label for="log-preset">Preset</label>
+          <select id="log-preset" name="logPreset">
+            <option value="reading">Reading log</option>
+            <option value="workout">Workout log</option>
+            <option value="mileage">Mileage log</option>
+            <option value="expense">Expense log</option>
+            <option value="bp">Blood pressure log</option>
+            <option value="visitor">Visitor log</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="log-title">Page heading</label>
+          <input id="log-title" name="logTitle" type="text" maxlength="60" value="Reading log">
+        </div>
+        <div class="field">
+          <label for="log-cols">Columns</label>
+          <input id="log-cols" name="logCols" type="text" value="Date, Title:3, Author:2, Pages, Rating">
+          <div class="hint">Separate columns with commas. Add <code>:2</code> to make a column twice as wide.</div>
+        </div>
+        <div class="field">
+          <label for="log-row">Row height</label>
+          <select id="log-row" name="logRow"><option value="0.25">1/4 in</option><option value="0.3" selected>0.3 in</option><option value="0.375">3/8 in</option><option value="0.5">1/2 in</option></select>
+        </div>
+      </div>
+      <div class="ji-opts" data-for="prompts">
+        <h3>Prompts</h3>
+        <div class="field">
+          <label for="prompts">One prompt per line</label>
+          <textarea id="prompts" name="prompts" rows="5">Today I am grateful for…
+What would make today great?
+Daily affirmation
+Highlights of the day
+What did I learn today?</textarea>
+          <div class="hint">The page is shared evenly between the prompts, with writing lines under each.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Lines</h2>
+      <div class="field">
+        <span class="label" id="lm-l">Colour</span>
+        <div class="seg" role="radiogroup" aria-labelledby="lm-l">
+          <label><input type="radio" name="linemode" value="grey" checked>Grey</label>
+          <label><input type="radio" name="linemode" value="color">Colour</label>
+        </div>
+      </div>
+      <div class="field" id="tint-f">
+        <label for="tint">Grey: <span id="tint-out">30%</span> black</label>
+        <input id="tint" name="tint" type="range" min="5" max="100" step="5" value="30">
+      </div>
+      <div class="field" id="color-f" hidden>
+        <label for="lcolor">Line colour</label>
+        <input id="lcolor" name="lcolor" type="color" value="#8fb3d9">
+        <div class="hint">Colour only prints in a colour interior. In a black-and-white book it prints as grey.</div>
+      </div>
+      <div class="field">
+        <label for="lweight">Line weight (pt)</label>
+        <input id="lweight" name="lweight" type="number" min="0.1" max="4" step="0.05" value="0.6" inputmode="decimal">
+      </div>
+      <label class="check"><input type="checkbox" name="fullbleed" id="fullbleed"> <span>Full-bleed lines (run off the page edge; needs bleed)</span></label>
+      <div id="line-msg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Header</h2>
+      <label class="check"><input type="checkbox" name="hdrOn" id="hdr-on"> <span>Header line at the top of each page</span></label>
+      <div class="field" id="hdr-f">
+        <label for="hdr-text">Header text</label>
+        <input id="hdr-text" name="hdrText" type="text" maxlength="80" value="Date ________">
+        <div class="hint">Underscores become writing lines, for example <code>Date ____  Topic ________</code>. Used on ruled, grid, dot, blank, handwriting, music and prompt pages.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Title page and page numbers <span class="badge pro">Pro</span></h2>
+      <label class="check"><input type="checkbox" name="titleOn" id="title-on"> <span>"This journal belongs to" page first</span></label>
+      <div id="title-f">
+        <div class="field">
+          <label for="title-text">Title page heading</label>
+          <input id="title-text" name="titleText" type="text" maxlength="60" value="This journal belongs to">
+        </div>
+        <div class="field">
+          <label for="title-lines">Extra lines (one per line, optional)</label>
+          <textarea id="title-lines" name="titleLines" rows="2" style="min-height:64px">If found, please contact</textarea>
+        </div>
+        <label class="check"><input type="checkbox" name="titleBack" id="title-back" checked> <span>Leave the back of the title page blank</span></label>
+      </div>
+      <label class="check"><input type="checkbox" name="numOn" id="num-on"> <span>Page numbers</span></label>
+      <div class="field" id="num-f">
+        <label for="num-pos">Position</label>
+        <select id="num-pos" name="numPos"><option value="outside">Bottom, outside corner</option><option value="center">Bottom, centre</option></select>
+      </div>
+    </div>
+  </form>
+
+  <div class="preview">
+    <div class="panel">
+      <div class="canvas-box plain" id="ji-box"><canvas id="ji-canvas" role="img" aria-label="Preview of the selected pages"></canvas></div>
+      <div class="ji-sides" id="ji-sides"></div>
+      <div class="ji-nav">
+        <button type="button" class="btn ghost" id="ji-prev" aria-label="Previous pages">‹</button>
+        <input type="range" id="ji-spread" min="0" max="60" value="1" aria-label="Choose pages to preview">
+        <button type="button" class="btn ghost" id="ji-next" aria-label="Next pages">›</button>
+        <span class="ji-where" id="ji-where" aria-live="polite"></span>
+      </div>
+      <div class="ji-nav">
+        <div class="seg" role="radiogroup" aria-label="Preview view">
+          <label><input type="radio" name="view" value="spread" checked>Spread</label>
+          <label><input type="radio" name="view" value="page">One page</label>
+        </div>
+        <label class="check" style="margin:0"><input type="checkbox" id="ji-guides" checked> <span>Show margins and safe area</span></label>
+      </div>
+      <div class="ji-legend" id="ji-legend">
+        <span><i style="background:rgba(220,38,38,.28)"></i>Bleed (trimmed off)</span>
+        <span><i style="background:rgba(234,179,8,.30)"></i>Margin</span>
+        <span><i style="background:rgba(124,58,237,.28)"></i>Gutter (inside margin)</span>
+        <span><i style="background:transparent;border:1.5px dashed #0f766e"></i>Safe area</span>
+      </div>
+      <p class="small muted" style="margin:6px 0 0">Guides only show here. They are never printed in the PDF.</p>
+      <div id="ji-msg"></div>
+      <div class="result-grid" id="ji-stats" style="margin-top:12px"></div>
+      <p class="small" id="ji-cover-link" style="margin:8px 0 0"></p>
+      <div class="pro-box hide-if-pro" id="ji-pro" hidden></div>
+      <div class="btn-row">
+        <button class="btn" type="button" id="ji-dl">Download PDF</button>
+      </div>
+      <div id="ji-progress" hidden>
+        <div class="progress" role="progressbar" aria-label="PDF progress" aria-valuemin="0" aria-valuemax="100"><div></div></div>
+        <div class="ji-export-msg muted" id="ji-progress-text"></div>
+      </div>
+      <div id="ji-done"></div>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+  <h2>How to make a journal interior</h2>
+  <ol>
+    <li><strong>Pick the trim size</strong> you will choose in KDP. It must match exactly, or KDP rejects the file.</li>
+    <li><strong>Leave bleed off</strong> unless something should print right to the edge. Plain notebooks almost never need it.</li>
+    <li><strong>Type the page count.</strong> More pages means a wider inside margin (the gutter), and the preview updates to show it.</li>
+    <li><strong>Choose a page style</strong> and adjust the line colour and weight. Flick through the spreads to check the left and right pages.</li>
+    <li><strong>Download the PDF</strong> and upload it as the manuscript in KDP. Then make the cover with the spine width shown above.</li>
+  </ol>
+
+  <h2>Line spacing at a glance</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Style</th><th>Spacing</th><th>Good for</th></tr></thead>
+    <tbody>
+      <tr><td>Narrow ruled</td><td>1/4 in (6.4 mm)</td><td>Small handwriting, dense notes</td></tr>
+      <tr><td>College ruled</td><td>9/32 in (7.1 mm)</td><td>Everyday adult notebooks and journals</td></tr>
+      <tr><td>Wide ruled</td><td>11/32 in (8.7 mm)</td><td>Children, large handwriting, gratitude journals</td></tr>
+      <tr><td>Dot grid</td><td>5 mm is the usual bullet-journal size</td><td>Bullet journals, sketching, lettering</td></tr>
+      <tr><td>Graph paper</td><td>1/4 in (4 squares per inch) or 5 mm</td><td>Maths, knitting and cross-stitch charts, floor plans</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Why the lines stay inside the margins</h2>
+  <p>Books are printed on large sheets that are folded, glued and then cut. Each cut can land a little off, so KDP asks for everything on an interior page to sit inside a margin: at least 0.25 in from the top, bottom and outside edge without bleed, and 0.375 in with bleed. Lines that reach into that zone can end up cut through on some copies and not on others, which looks like a printing fault to a reader.</p>
+  <p>The inside margin, next to the spine, is the <strong>gutter</strong>. Glue and the curve of the open book swallow part of the page there, and the thicker the book, the more it swallows. That's why KDP's gutter grows from 0.375 in for books up to 150 pages to 0.875 in for books over 700 pages. On a right-hand (odd) page the gutter is on the left; on a left-hand (even) page it's on the right. The preview shows both so you can check the mirroring. The <a href="{{root}}kdp-margin-calculator/">KDP margin calculator</a> has the full table.</p>
+  <p>If you do want lines to run off the edge, turn on bleed and tick <em>Full-bleed lines</em>. The page is then made 0.125 in larger on the outside edge and on the top and bottom, and the lines extend through that strip so there's no white sliver after trimming. Header text and page numbers still stay inside the safe area.</p>
+
+  <h2>Lines that print well</h2>
+  <p>A screen shows a 0.25 pt, 10% grey line perfectly. A print-on-demand press may not. Very light greys are printed as a fine dot pattern, and thin hairlines can break up or disappear. Lines at 25 to 35% grey and 0.5 to 0.75 pt look delicate on paper and print reliably on both white and cream stock. The tool warns you when lines are lighter than 15% grey or thinner than 0.5 pt. All lines are vector, so they stay sharp at any size.</p>
+
+  <h2>Publishing a low-content book on KDP</h2>
+  <p>KDP treats notebooks, journals, planners and log books as <strong>low-content books</strong>: pages meant to be written in. When you set up the paperback, tick the low-content option in the categories step. Low-content books don't need an ISBN; you can publish with none or with one you own, but they can't use KDP's free ISBN. Without an ISBN, KDP prints no barcode on the cover, and low-content titles aren't eligible for Expanded Distribution. KDP requires an even number of pages and at least 24, and larger trims have lower page limits (8.5 × 11 in tops out at 590 pages on white paper).</p>
+  <p>The spine width above uses KDP's paper thickness: 0.002252 in per page on white paper and 0.0025 in per page on cream. Paper colour doesn't change the interior file, only the cover. Spine text is only allowed on books with more than 79 pages.</p>
+</section>

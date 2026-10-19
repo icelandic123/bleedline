@@ -1,0 +1,28 @@
+{
+  "slug": "etsy-fee-calculator",
+  "category": "pod",
+  "order": 4,
+  "title": "Etsy Fee Calculator 2026: Profit After Fees",
+  "h1": "Etsy fee calculator",
+  "description": "See every Etsy fee on a sale (transaction, payment processing, listing, Offsite Ads, regulatory, currency) plus your profit, margin and break-even price.",
+  "intro": "Enter your price, shipping and costs to see exactly what Etsy charges on a sale, line by line with the formula, and what you keep. Works for sellers in the US, UK, Canada, Australia, the EU and more, with a print-on-demand mode and a calculator that finds the price for the profit you want.",
+  "card": "Every Etsy fee on a sale, your profit and margin, and the price you need.",
+  "free": "Everything",
+  "related": ["poster-tiler"],
+  "lastReviewed": "2026-10-19",
+  "sources": [
+    {"name": "Etsy fees policy", "url": "https://www.etsy.com/legal/fees"},
+    {"name": "Etsy: fees and taxes for selling", "url": "https://help.etsy.com/hc/en-us/articles/115014483627-What-are-the-Fees-and-Taxes-for-Selling-on-Etsy"},
+    {"name": "Etsy: payment processing fees", "url": "https://help.etsy.com/hc/en-us/articles/115015628847-What-are-Payment-Processing-Fees-for-Selling-on-Etsy"},
+    {"name": "Etsy: regulatory operating fee", "url": "https://help.etsy.com/hc/en-us/articles/1500011073202-What-is-a-Regulatory-Operating-Fee"}
+  ],
+  "faq": [
+    {"q": "How much does Etsy take from a sale?", "a": "For a US seller the standard fees are a 6.5% transaction fee on the item price, shipping and gift wrap, a 3% + $0.25 payment processing fee on the full amount the buyer pays, and a $0.20 listing fee for each item sold. On a $25 item with $5 shipping that's $1.95 + $1.15 + $0.20 = $3.30, or 11% of the $30. Offsite Ads (12% or 15%), a regulatory operating fee in some countries and a 2.5% currency conversion fee can come on top."},
+    {"q": "Does Etsy charge fees on shipping?", "a": "Yes. The 6.5% transaction fee is charged on the item price plus what the buyer pays for shipping and gift wrap, and the payment processing fee is charged on the whole order total. Moving money from the item price into shipping, or offering free shipping, doesn't change your fees: only the order total matters."},
+    {"q": "Do I pay Etsy fees on sales tax?", "a": "Partly. When Etsy collects US sales tax, it's left out of the transaction fee, the regulatory operating fee and Offsite Ads, but the payment processing fee is still worked out on the total the buyer paid, tax included. The tax itself goes to the state, not to you."},
+    {"q": "What are Offsite Ads and can I avoid the fee?", "a": "Etsy advertises listings on other sites and charges a fee only when a buyer clicks one of those ads and orders from your shop within 30 days. The fee is 15% of the order total if your shop made under US$10,000 in the past 365 days, and you can opt out. Once you pass US$10,000 the fee is 12% and you can't opt out. Either way it is capped at US$100 per order."},
+    {"q": "What is Etsy's regulatory operating fee?", "a": "A percentage of the order total (item, shipping and gift wrap, excluding tax Etsy collects) charged to sellers in some countries to cover the cost of local regulations. Etsy lists the UK (0.48%), Canada (0.50%), France (1.14%), Italy (0.80%), Spain (0.88%), Hungary (1.97%), India (0.05%), Türkiye (1.67%) and Vietnam (1.24%). US sellers don't pay it."},
+    {"q": "How do I avoid the 2.5% currency conversion fee?", "a": "Etsy charges it when your listings are priced in a different currency from your payment account, because it has to convert every sale. Listing in your payment account's currency avoids it. Buyers abroad still see prices in their own currency."},
+    {"q": "How should I price print-on-demand products on Etsy?", "a": "Switch on print-on-demand mode, enter what your print provider charges you for the item and its shipping, add any Etsy Ads spend per sale, then use the target profit box. It finds the item price that leaves that profit after every Etsy fee, which is safer than adding a fixed markup because Etsy's fees grow with the price."}
+  ]
+}

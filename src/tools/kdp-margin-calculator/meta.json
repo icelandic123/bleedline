@@ -1,0 +1,60 @@
+{
+  "slug": "kdp-margin-calculator",
+  "category": "kdp",
+  "order": 2,
+  "title": "KDP Margin Calculator: Gutter, Bleed & Page Size",
+  "h1": "KDP margin calculator",
+  "description": "Find the KDP gutter and outside margins for your trim size and page count, the exact PDF page size with or without bleed, and the settings for Word and Google Docs.",
+  "intro": "Enter your trim size and page count to get KDP's required inside margin (the gutter), the minimum outside, top and bottom margins, the exact PDF page size with and without bleed, and values you can type straight into Word, Google Docs or LibreOffice. The spread below is drawn to scale.",
+  "card": "Gutter and margins for any KDP trim and page count, with Word settings.",
+  "free": "Everything",
+  "related": [
+    "journal-interior-maker",
+    "kdp-cover-calculator",
+    "kdp-royalty-calculator"
+  ],
+  "scripts": [
+    "assets/kdp.js"
+  ],
+  "lastReviewed": "2026-10-19",
+  "sources": [
+    {
+      "name": "KDP: set trim size, bleed and margins",
+      "url": "https://kdp.amazon.com/en_US/help/topic/GVBQ3CMEQW3W2VL6"
+    },
+    {
+      "name": "KDP: paperback and hardcover trim sizes",
+      "url": "https://kdp.amazon.com/en_US/help/topic/G201834180"
+    },
+    {
+      "name": "KDP: cover dimensions and spine width",
+      "url": "https://kdp.amazon.com/en_US/help/topic/G201953020"
+    }
+  ],
+  "faq": [
+    {
+      "q": "What is the gutter margin and why does it get bigger with more pages?",
+      "a": "The gutter is the inside margin, next to the spine. In a glued paperback the pages curve into the binding, and the thicker the book, the deeper the curve, so text near the spine becomes hard to read. KDP's minimum gutter is 0.375 in for 24 to 150 pages and rises in steps to 0.875 in for 701 to 828 pages."
+    },
+    {
+      "q": "Are the outside margins measured from the trim or from the edge of the PDF?",
+      "a": "From the edge of the PDF page. KDP asks for at least 0.25 in without bleed and at least 0.375 in with bleed. With bleed the page is 0.125 in larger on the outside, top and bottom, and that extra strip is cut off, so 0.375 in from the PDF edge is the same 0.25 in inside the trim line. The gutter side has no bleed, so the inside margin is the same either way."
+    },
+    {
+      "q": "Do I need bleed?",
+      "a": "Only if something on an interior page should print right to the edge, such as a photo, a background colour or lines that run off the page. A text-only book should be set up without bleed. If even one page bleeds, KDP needs the whole file set up with bleed, which makes every page 0.125 in wider and 0.25 in taller."
+    },
+    {
+      "q": "How do I set mirror margins in Word?",
+      "a": "Go to Layout › Margins › Custom Margins, set <em>Multiple pages</em> to <em>Mirror margins</em>, then type the Top, Bottom, Inside and Outside values from this page and leave Gutter at 0. Set the page size first under Layout › Size › More Paper Sizes, and apply both to the whole document."
+    },
+    {
+      "q": "Are hardcover margins different?",
+      "a": "No. KDP uses the same margin table for paperback and hardcover, but hardcovers come in fewer trim sizes and need 75 to 550 pages."
+    },
+    {
+      "q": "Does ink or paper colour change the margins?",
+      "a": "No. Margins depend only on trim size, page count and bleed. Ink and paper change the page limits for each trim and the spine width, which this page also shows."
+    }
+  ]
+}

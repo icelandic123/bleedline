@@ -1,0 +1,29 @@
+{
+  "slug": "word-search-maker",
+  "category": "kdp",
+  "order": 4,
+  "title": "Word Search Maker: Printable Puzzles & KDP Puzzle Books",
+  "h1": "Word search maker",
+  "description": "Make printable word search puzzles or a whole KDP puzzle book: themed word lists, answer keys, any trim size, embedded fonts. Free, runs in your browser.",
+  "intro": "Type a word list or pick a theme and get a word search with every word placed exactly once. Print it on Letter or A4 for class, or export a full book interior for Amazon KDP with a title page, page numbers and an answer key.",
+  "card": "Printable word searches and KDP puzzle book interiors with answer keys.",
+  "free": "PDFs of up to 5 puzzles with answer keys, every page size",
+  "pro": "Books of up to 300 puzzles, 4 or 6 solutions per page",
+  "proFeature": true,
+  "related": ["sudoku-book-maker", "isbn-barcode-generator"],
+  "scripts": ["assets/kdp.js", "word-search-maker/book.js", "word-search-maker/wordsearch-core.js", "word-search-maker/themes.js"],
+  "lastReviewed": "2026-10-19",
+  "sources": [
+    {"name": "KDP: Set trim size, bleed, and margins", "url": "https://kdp.amazon.com/en_US/help/topic/GVBQ3CMEQW3W2VL6"},
+    {"name": "KDP: Low-content books", "url": "https://kdp.amazon.com/en_US/help/topic/GGE5T76TWKA85DJM"}
+  ],
+  "faq": [
+    {"q": "Can I sell puzzle books made with this tool?", "a": "Yes. The puzzles you make are yours to print, share or sell, including on Amazon KDP. The themed word lists are common everyday words, so there is nothing to license. Make the book your own with your own themes, titles and cover."},
+    {"q": "Is a word search book a low-content book on KDP?", "a": "Usually not. KDP's help page names notebooks, journals and log books as low-content and lists puzzle books among the examples that generally aren't. So you publish it as a regular paperback without ticking the low-content box, and you can use a free KDP ISBN. Read KDP's current low-content page before you publish."},
+    {"q": "Why didn't all my words fit?", "a": "The grid is too small for the list, a word is longer than the grid is wide, or only one or two directions are allowed. The tool tells you which words were left out and the smallest grid that fits them all. Adding diagonal words also makes room."},
+    {"q": "Can a word appear twice in the grid?", "a": "Not by accident. After filling the empty squares the tool searches the grid for every word in all eight directions and changes filler letters until each word appears once. The exception is a word that sits inside another word in your list, such as CAT in CATERPILLAR, which the tool warns you about."},
+    {"q": "Which trim size is best for a word search book?", "a": "8.5 × 11 in is the most common for word search books because the grids can be big, which large-print readers and children need. 6 × 9 in costs less to print and suits travel-size books with 15 × 15 grids or smaller."},
+    {"q": "Do I need bleed for a puzzle book?", "a": "No. Puzzle pages have white margins, so a no-bleed interior is normal. Only choose bleed if you'll add artwork that runs to the edge of the page, and pick the same bleed setting when you upload to KDP."},
+    {"q": "How do I make the same puzzles again later?", "a": "Keep the seed. The same words, settings and seed always produce the same grids, and your puzzle lists stay saved in this browser."}
+  ]
+}

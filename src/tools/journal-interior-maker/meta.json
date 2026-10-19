@@ -1,0 +1,66 @@
+{
+  "slug": "journal-interior-maker",
+  "category": "kdp",
+  "order": 3,
+  "title": "KDP Journal Interior Generator: Lined, Dot Grid & Graph PDF",
+  "h1": "Journal interior maker",
+  "description": "Make a KDP-ready notebook or journal interior PDF: college, wide or custom ruled, dot grid, graph or blank pages, any trim size, with or without bleed. Free.",
+  "intro": "Pick a trim size, page count and page style, check the left and right pages side by side, and download a print-ready PDF for a notebook, journal or logbook. Lines stay inside KDP's margins, the gutter grows with your page count, and an 800-page book downloads in seconds.",
+  "card": "Lined, dot grid and graph notebook interiors as KDP-ready PDFs.",
+  "free": "Ruled, dot grid, graph and blank pages at any trim size and page count, bleed, full-bleed lines, header line, line colour and weight",
+  "pro": "Handwriting practice, music staff, daily and weekly planners, habit tracker, recipe, prompt and log pages, title page, page numbers and mixed books",
+  "proFeature": true,
+  "related": [
+    "kdp-margin-calculator",
+    "kdp-cover-calculator",
+    "isbn-barcode-generator"
+  ],
+  "scripts": [
+    "assets/kdp.js"
+  ],
+  "lastReviewed": "2026-10-19",
+  "sources": [
+    {
+      "name": "KDP: set trim size, bleed and margins",
+      "url": "https://kdp.amazon.com/en_US/help/topic/GVBQ3CMEQW3W2VL6"
+    },
+    {
+      "name": "KDP: low-content books",
+      "url": "https://kdp.amazon.com/en_US/help/topic/GGE5T76TWKA85DJM"
+    },
+    {
+      "name": "KDP: cover dimensions and spine width",
+      "url": "https://kdp.amazon.com/en_US/help/topic/G201953020"
+    }
+  ],
+  "faq": [
+    {
+      "q": "Does a low-content journal need an ISBN on KDP?",
+      "a": "No. When you tick the low-content box during setup, KDP lets you publish without an ISBN, or with one you bought yourself. Low-content books can't use KDP's free ISBN, and without an ISBN KDP prints no barcode and the book isn't offered through Expanded Distribution. You can't change the ISBN choice after publishing without unpublishing and starting a new title."
+    },
+    {
+      "q": "What is the difference between college ruled and wide ruled?",
+      "a": "Only the gap between lines. College ruled is 9/32 in (7.1 mm), the usual adult notebook. Wide ruled is 11/32 in (8.7 mm), easier for children and large handwriting. Narrow ruled is 1/4 in (6.4 mm) and fits the most lines on a page. You can also type any spacing in millimetres or inches."
+    },
+    {
+      "q": "Why don't the lines run to the edge of the page?",
+      "a": "KDP asks for everything printed on an interior page to stay inside the margins, because pages can shift slightly when the book is trimmed and bound. If you want lines that run off the edge, switch on bleed and tick <em>Full-bleed lines</em>; the PDF is then made 0.125 in wider and 0.25 in taller so the printer can trim through the lines. If any page bleeds, KDP needs the whole file set up with bleed."
+    },
+    {
+      "q": "Why must the page count be even?",
+      "a": "Every sheet in a book has two sides, so a printed book always has an even number of pages. Page 1 is a right-hand page, page 2 is on its back. If you type an odd number the tool adds a page. KDP paperbacks need at least 24 pages."
+    },
+    {
+      "q": "How light can the lines be?",
+      "a": "Keep lines at 15% grey or darker and at least 0.5 pt thick. Fainter or thinner hairlines can break up or vanish when the book is printed, especially on cream paper. 25 to 35% grey at 0.5 to 0.75 pt looks light on the page and still prints reliably."
+    },
+    {
+      "q": "Which trim size is best for a journal?",
+      "a": "6 × 9 in is the most common size for journals and notebooks, and 5.5 × 8.5 in suits pocket notebooks. 8.5 × 11 in is popular for planners and log books because there's more room to write, but KDP allows only up to 590 pages at that size on white paper (550 on cream)."
+    },
+    {
+      "q": "Can I sell books made with these pages?",
+      "a": "Yes. The pages are drawn on your device from your settings and the files are yours to publish. The only font used for text, Atkinson Hyperlegible, is under the SIL Open Font License, which allows embedding in books you sell."
+    }
+  ]
+}

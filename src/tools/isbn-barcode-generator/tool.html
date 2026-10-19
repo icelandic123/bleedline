@@ -1,0 +1,68 @@
+<div class="tool">
+  <form class="panel" id="bc-form" autocomplete="off" onsubmit="return false">
+    <div class="field">
+      <label for="isbn">ISBN</label>
+      <input id="isbn" name="isbn" type="text" inputmode="numeric" placeholder="978-1-7345678-0-2" value="978-0-306-40615-7">
+      <div class="hint">ISBN-13 or ISBN-10. Hyphens are kept in the printed text.</div>
+    </div>
+    <div class="field">
+      <span class="label">Price add-on</span>
+      <div class="seg" role="radiogroup">
+        <label><input type="radio" name="addon" value="none">None</label>
+        <label><input type="radio" name="addon" value="90000" checked>90000 (no price)</label>
+        <label><input type="radio" name="addon" value="price">Price</label>
+        <label><input type="radio" name="addon" value="custom">Custom</label>
+      </div>
+    </div>
+    <div class="row" id="price-row" hidden>
+      <div class="field">
+        <label for="currency">Currency</label>
+        <select id="currency" name="currency">
+          <option value="5">US dollar (5)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="price">Price</label>
+        <input id="price" name="price" type="number" min="0.01" max="99.98" step="0.01" value="14.99">
+      </div>
+    </div>
+    <div class="field" id="custom-row" hidden>
+      <label for="custom">Add-on digits</label>
+      <input id="custom" name="custom" type="text" inputmode="numeric" maxlength="5" value="90000">
+      <div class="hint">Exactly 5 digits. Other currencies use their own first digit, so check with your printer or distributor.</div>
+    </div>
+    <div class="field">
+      <label for="scale">Size: <span id="scale-out">100%</span></label>
+      <input id="scale" name="scale" type="range" min="80" max="200" step="5" value="100">
+      <div class="hint">100% is the standard size. The book trade allows 80% to 200%.</div>
+    </div>
+    <label class="check"><input type="checkbox" name="label" id="show-label" checked> Print "ISBN …" above the bars</label>
+    <label class="check"><input type="checkbox" name="bg" id="white-bg" checked> White background box (needed on dark covers)</label>
+  </form>
+  <div class="preview">
+    <div class="panel">
+      <div class="canvas-box plain" id="bc-preview" aria-live="polite"></div>
+      <div id="bc-msg"></div>
+      <div class="result-grid" id="bc-stats" style="margin-top:12px"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" id="dl-svg">Download SVG</button>
+        <button class="btn secondary" type="button" id="dl-pdf">PDF</button>
+        <button class="btn secondary" type="button" id="dl-png">PNG 600 DPI</button>
+        <button class="btn ghost" type="button" id="dl-png300">PNG 300 DPI</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+  <h2>How to use it</h2>
+  <ol>
+    <li>Paste your ISBN. The tool checks the check digit, so a typo shows up straight away.</li>
+    <li>Pick the add-on. Most self-published books sold online use <strong>90000</strong>, which means no printed price.</li>
+    <li>Download SVG or PDF for your cover file, or a 600 DPI PNG if your design app only takes images.</li>
+    <li>Place it on the back cover, usually bottom right, at least 0.25 in (6 mm) from the trim and the spine. KDP suggests a 2 × 1.2 in area and accepts 1.4 × 0.8 in at the smallest.</li>
+  </ol>
+  <h2>What makes a book barcode scan</h2>
+  <p>A book barcode is an EAN-13 symbol whose digits are the ISBN-13. Scanners need dark bars on a light background, so keep the bars 100% black on plain white (KDP asks for exactly that), and leave the white margin on both sides of the bars clear. Red, light grey or low-contrast colors often fail to scan. If your cover is dark or busy, keep the white box switched on.</p>
+  <p>The book trade allows 80% to 200% of the standard size. Below 80% the bars get too thin for many scanners, and stretching the barcode out of proportion breaks it, so resize it only by scaling evenly. If you supply your own barcode to KDP, keep it as a separate layer or vector (not flattened into the cover art), make sure the ISBN matches the book, and make sure any price in the add-on matches your list price.</p>
+</section>

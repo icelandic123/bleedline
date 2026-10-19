@@ -1,0 +1,212 @@
+<style>
+  .cv-units { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .cv-box { padding: 6px; min-height: 240px; }
+  .cv-box svg { width: 100%; height: auto; max-height: none; overflow: visible; }
+  .cv-box .hit { fill: transparent; cursor: help; outline: none; }
+  .cv-box .hit:focus-visible { stroke: var(--accent); stroke-width: .03; }
+  .cv-hl { fill: rgba(245, 158, 11, .18); stroke: #f59e0b; stroke-width: .035; pointer-events: none; }
+  .cv-dim { color: var(--muted); }
+  .cv-zone { min-height: 3.2em; margin: 10px 0 0; }
+  .cv-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .cv-legend button { font: inherit; font-size: .82rem; display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
+  .cv-legend button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+  .cv-sw { display: inline-block; width: 18px; height: 10px; border-radius: 2px; flex: none; }
+  .cv-sw.trim { border-top: 2px solid #111827; height: 0; background: #fff; }
+  .cv-sw.bleed { background: rgba(225, 29, 72, .35); }
+  .cv-sw.fold { border-top: 2px dashed #2563eb; height: 0; }
+  .cv-sw.safe { border: 2px dashed #16a34a; }
+  .cv-sw.barcode { background: #fde68a; border: 1px solid #b45309; }
+  .cv-sw.spinetext { border: 2px dotted #16a34a; }
+  .cv-key .v { font-size: 1.15rem; }
+  .cv-big .v { font-size: 1.5rem; }
+  .cv-dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .cv-dl .btn { width: 100%; }
+  @media (max-width: 460px) { .cv-dl { grid-template-columns: 1fr; } }
+  .cv-art { margin-top: 12px; }
+  .cv-art .drop { padding: 14px 12px; }
+  .cv-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 760px) { .cv-two { grid-template-columns: 1fr; } }
+  .cv-table td.num, .cv-table th.num { text-align: right; white-space: nowrap; }
+  .cv-hc svg { width: 100%; height: auto; }
+  .cv-hc text { fill: var(--text); font: 600 11px var(--font); }
+  .cv-hc .t2 { fill: var(--muted); font-weight: 400; }
+  .cv-formula { font-family: var(--mono); background: var(--surface-2); border-radius: 8px; padding: 10px 12px; overflow-x: auto; font-size: .9rem; }
+  .cv-share { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+</style>
+
+<div class="tool">
+  <div>
+    <form class="panel" id="cv-form" autocomplete="off" onsubmit="return false">
+      <div class="field">
+        <span class="label" id="fmt-l">Book format</span>
+        <div class="seg" role="radiogroup" aria-labelledby="fmt-l">
+          <label><input type="radio" name="format" value="paperback" checked>Paperback</label>
+          <label><input type="radio" name="format" value="hardcover">Hardcover</label>
+        </div>
+      </div>
+      <div class="field">
+        <label for="trim">Trim size</label>
+        <select id="trim" name="trim"></select>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="pages">Page count</label>
+          <input id="pages" name="pages" type="number" inputmode="numeric" min="24" max="828" step="2" value="200">
+        </div>
+        <div class="field">
+          <span class="label" id="units-l">Units</span>
+          <div class="seg" role="radiogroup" aria-labelledby="units-l">
+            <label><input type="radio" name="units" value="in" checked>in</label>
+            <label><input type="radio" name="units" value="mm">mm</label>
+            <label><input type="radio" name="units" value="cm">cm</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="paper">Ink and paper</label>
+        <select id="paper" name="paper">
+          <option value="white">Black &amp; white, white paper</option>
+          <option value="cream">Black &amp; white, cream paper</option>
+          <option value="groundwood">Black &amp; white, groundwood paper</option>
+          <option value="stdcolor">Standard color, white paper</option>
+          <option value="premcolor">Premium color, white paper</option>
+        </select>
+        <div class="hint" id="pages-hint">Use the page count of your final interior PDF, blank pages included.</div>
+      </div>
+      <div id="cv-msg" aria-live="polite"></div>
+    </form>
+
+    <div class="panel" id="cv-results" aria-live="polite">
+      <div class="result-grid" id="cv-stats"></div>
+      <div class="cv-share">
+        <a class="btn ghost" id="to-royalty" href="{{root}}kdp-royalty-calculator/">Printing cost &amp; royalty for this book</a>
+        <button class="btn ghost" type="button" id="copy-link">Copy link to these settings</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview">
+    <div class="panel" id="pb-panel">
+      <h2>Your cover template</h2>
+      <div class="canvas-box plain cv-box" id="cv-preview"></div>
+      <div class="cv-legend" id="cv-legend" role="group" aria-label="Highlight a part of the template"></div>
+      <p class="note cv-zone" id="cv-zone" aria-live="polite">Hover over or tap any part of the template to see its exact size and position.</p>
+      <div class="cv-dl">
+        <button class="btn" type="button" id="dl-png">PNG template (300 DPI)</button>
+        <button class="btn" type="button" id="dl-pdf">PDF template (exact size)</button>
+        <button class="btn secondary" type="button" id="dl-png-guides">Guides only: transparent PNG</button>
+        <button class="btn secondary" type="button" id="dl-pdf-guides">Guides only: PDF</button>
+      </div>
+      <div class="btn-row"><button class="btn ghost block" type="button" id="dl-zip">Download all four as a ZIP</button></div>
+      <p class="small muted" id="dl-status" aria-live="polite">The labelled template is for planning. The guides-only files have no text and no background, so you can lay them over your artwork as a layer, then hide that layer before you export.</p>
+
+      <div class="cv-art">
+        <h3 style="margin:14px 0 6px">Check your artwork on the template</h3>
+        <div class="drop" id="art-drop" tabindex="0" role="button" aria-label="Choose a cover image to preview on the template">
+          <strong>Drop a cover image here</strong>
+          <span class="small muted">or click to choose a JPG or PNG. It stays on your device.</span>
+          <input type="file" accept="image/*" id="art-file">
+        </div>
+        <div id="art-opts" hidden>
+          <div class="field" style="margin-top:10px">
+            <span class="label" id="art-mode-l">This image is</span>
+            <div class="seg" role="radiogroup" aria-labelledby="art-mode-l">
+              <label><input type="radio" name="artmode" value="front" checked>The front cover</label>
+              <label><input type="radio" name="artmode" value="full">The full cover (back, spine, front)</label>
+            </div>
+          </div>
+          <label class="check"><input type="checkbox" id="art-guides" checked> Show guides over the image</label>
+          <div id="art-msg" aria-live="polite"></div>
+          <button class="btn ghost" type="button" id="art-clear">Remove image</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="hc-panel" hidden>
+      <h2>Hardcover (case laminate) cover</h2>
+      <div class="note warn"><strong>KDP doesn't publish the hardcover spine width or full cover size.</strong> They exist only inside KDP's own cover calculator, and the third-party formulas we found disagree with KDP's published wrap size. A wrong guess here means a rejected cover, so this tool doesn't estimate them. Download the exact template from KDP, then use the measurements below to place your artwork.</div>
+      <p><a class="btn" href="https://kdp.amazon.com/cover-calculator" target="_blank" rel="noopener nofollow">Open KDP's cover calculator for the exact template</a></p>
+      <div class="result-grid" id="hc-stats"></div>
+      <div class="cv-hc" style="margin-top:14px">
+        <svg viewBox="0 0 640 300" role="img" aria-labelledby="hc-svg-t">
+          <title id="hc-svg-t">Hardcover cover zones, not to scale: wrap around the outside, hinge each side of the spine, safe area inside, barcode lower right of the back cover.</title>
+          <rect x="10" y="10" width="620" height="280" rx="4" style="fill:var(--warn-soft);stroke:var(--warn)"/>
+          <rect x="45" y="45" width="550" height="210" style="fill:var(--surface);stroke:var(--text)"/>
+          <rect x="285" y="45" width="70" height="210" style="fill:var(--surface-2);stroke:var(--text);stroke-dasharray:5 4"/>
+          <rect x="255" y="45" width="30" height="210" style="fill:var(--accent-soft)"/>
+          <rect x="355" y="45" width="30" height="210" style="fill:var(--accent-soft)"/>
+          <rect x="70" y="70" width="185" height="160" style="fill:none;stroke:var(--ok);stroke-dasharray:6 4"/>
+          <rect x="385" y="70" width="185" height="160" style="fill:none;stroke:var(--ok);stroke-dasharray:6 4"/>
+          <rect x="150" y="165" width="95" height="50" style="fill:var(--surface-2);stroke:var(--warn)"/>
+          <text x="320" y="30" text-anchor="middle">Wrap: art extends 0.51 in (15 mm) past the board edge</text>
+          <text x="162" y="62" text-anchor="middle" class="t2">Back cover</text>
+          <text x="478" y="62" text-anchor="middle" class="t2">Front cover</text>
+          <text x="320" y="150" text-anchor="middle" transform="rotate(90 320 150)">Spine</text>
+          <text x="270" y="275" text-anchor="middle" class="t2">hinge</text>
+          <text x="370" y="275" text-anchor="middle" class="t2">hinge</text>
+          <text x="197" y="194" text-anchor="middle" class="t2">barcode</text>
+          <text x="478" y="150" text-anchor="middle" class="t2">safe area</text>
+          <text x="478" y="166" text-anchor="middle" class="t2">0.635 in from edge</text>
+        </svg>
+        <p class="small muted">Diagram not to scale.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="panel" id="cv-detail" style="margin-top:16px">
+  <h2>Every measurement</h2>
+  <p class="small muted" id="cv-detail-lead">Positions are measured from the top-left corner of the file (the outer edge of the bleed). Drag guides to these positions in Canva, Affinity, Photoshop or InDesign.</p>
+  <div class="cv-two">
+    <div class="table-wrap"><table class="cv-table" id="cv-panels"></table></div>
+    <div class="table-wrap"><table class="cv-table" id="cv-guides"></table></div>
+  </div>
+</section>
+
+<section class="content">
+  <h2>How to use the cover calculator</h2>
+  <ol>
+    <li>Pick your trim size, the exact page count of your finished interior PDF, and the ink and paper you'll choose in KDP. The spine depends on all three, so finish the interior first.</li>
+    <li>Read off the full cover size. That is the page size of the PDF you upload: back cover, spine and front cover side by side, plus 0.125 in of bleed on every edge.</li>
+    <li>Download the template. Put the PNG or PDF on the bottom layer of your design (or the guides-only file on the top layer), build your cover around it, then hide the template before you export.</li>
+    <li>Export one PDF at exactly the full cover size, with images at 300 DPI or more. Fonts must be embedded.</li>
+  </ol>
+
+  <h2>How KDP spine width is calculated</h2>
+  <p>A paperback's spine is as thick as its stack of paper, so KDP multiplies the page count by a fixed thickness per page for each paper:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Ink and paper</th><th>Inches per page</th><th>mm per page</th></tr></thead>
+    <tbody>
+      <tr><td>Black &amp; white, white paper</td><td>0.002252</td><td>0.0572</td></tr>
+      <tr><td>Black &amp; white, cream paper</td><td>0.0025</td><td>0.0635</td></tr>
+      <tr><td>Black &amp; white, groundwood paper</td><td>0.00235</td><td>0.0596</td></tr>
+      <tr><td>Standard color</td><td>0.002252</td><td>0.0572</td></tr>
+      <tr><td>Premium color</td><td>0.002347</td><td>0.0596</td></tr>
+    </tbody>
+  </table></div>
+  <p>The full cover then follows from the trim size:</p>
+  <p class="cv-formula">spine = pages × per-page thickness<br>width = bleed + back + spine + front + bleed = 2 × trim width + spine + 0.25 in<br>height = bleed + trim height + bleed = trim height + 0.25 in</p>
+  <p><strong>Worked example:</strong> a 6 × 9 in paperback with 200 pages on white paper. Spine = 200 × 0.002252 = <strong>0.4504 in</strong> (11.44 mm). Width = 2 × 6 + 0.4504 + 0.25 = <strong>12.7004 in</strong>. Height = 9 + 0.25 = <strong>9.25 in</strong>. At 300 DPI that is 3810 × 2775 pixels. The same book on cream paper has a 0.5 in spine, so switching paper changes your cover file.</p>
+  <p>Cream paper is thicker than white, so the same book gets a wider spine. That's also why you can't reuse a cover after adding pages: every extra sheet makes the spine wider, the front cover moves right, and the file no longer matches.</p>
+
+  <h2>Why the cover is one PDF with bleed</h2>
+  <p>KDP prints the back, spine and front on one sheet, wraps it around the book block and cuts it to size. The cutting blade and the fold both move a little from book to book, so:</p>
+  <ul>
+    <li><strong>Bleed (0.125 in, 3.2 mm, on every side):</strong> background colour and images must run past the trim line to the edge of the file. If they stop at the trim, a slightly-off cut leaves a thin white edge.</li>
+    <li><strong>Safe area (0.125 in inside the trim):</strong> keep titles, author names and logos inside it so the cut never clips them.</li>
+    <li><strong>Spine folds:</strong> the fold can land up to 0.0625 in (1.6 mm) either side of the line. Keep spine text 0.0625 in clear of each fold, and avoid a hard colour change exactly on the fold, or it may wrap onto the front cover.</li>
+    <li><strong>Spine text:</strong> only allowed on books with more than 79 pages. Thinner spines are too narrow to print text reliably (KDP's Cover Creator asks for 80).</li>
+    <li><strong>Barcode area:</strong> KDP prints a free barcode in a 2 × 1.2 in white box at the lower right of the back cover, 0.25 in from the spine and the bottom trim. Leave that space free of text and important art.</li>
+  </ul>
+  <p>Because it is one sheet, the cover is one PDF page. Uploading the front cover alone, or a file sized to the trim without bleed, is the most common reason a cover is rejected.</p>
+
+  <h2>Cover file checklist</h2>
+  <ul>
+    <li>Page size exactly matches the full cover size above (the template PDF is already that size).</li>
+    <li>Images at 300 DPI or more at their printed size. KDP recommends staying at or below 600 DPI.</li>
+    <li>Text at least 7 pt and 0.125 in inside the trim. Fonts embedded.</li>
+    <li>Template layer hidden or deleted before export.</li>
+    <li>File under 650 MB.</li>
+  </ul>
+  <p>Next, work out what each copy will earn with the <a href="{{root}}kdp-royalty-calculator/">KDP royalty calculator</a>, or make a barcode for your own ISBN with the <a href="{{root}}isbn-barcode-generator/">ISBN barcode generator</a>.</p>
+</section>

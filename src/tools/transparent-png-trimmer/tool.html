@@ -1,0 +1,145 @@
+<style>
+.tool > .preview { min-width: 0; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 520px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tile { margin: 0; }
+.tile canvas { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; border-radius: 6px; border: 1px solid var(--border); cursor: zoom-in; }
+.tile.zoomed canvas { cursor: crosshair; }
+.tile figcaption { font-size: .78rem; color: var(--muted); margin-top: 3px; display: flex; justify-content: space-between; gap: 6px; align-items: center; }
+.tile figcaption input[type=color] { width: 30px; height: 22px; padding: 1px; }
+.view-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.check-list { list-style: none; padding: 0; margin: 10px 0 0; }
+.check-list li { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: .92rem; }
+.check-list li:last-child { border-bottom: 0; }
+.check-list .ic { flex: none; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: .8rem; }
+.ic.ok { background: var(--ok-soft); color: var(--ok); }
+.ic.warn { background: var(--warn-soft); color: var(--warn); }
+.ic.bad { background: var(--danger-soft); color: var(--danger); }
+.ic.info { background: var(--surface-2); color: var(--muted); }
+.check-list strong { display: block; }
+.check-list .d { color: var(--muted); font-size: .86rem; }
+.sub { margin: -2px 0 10px 26px; }
+.sub .field { margin-bottom: 6px; }
+.inline { display: flex; gap: 8px; align-items: center; }
+.inline input[type=number] { width: 90px; }
+.inline input[type=range] { flex: 1; }
+</style>
+
+<div class="tool">
+  <form class="panel" id="tp-form" autocomplete="off" onsubmit="return false">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose PNG files">
+      <input type="file" id="file" accept="image/png,.png,image/webp,.webp" multiple>
+      <strong>Drop a transparent PNG</strong>
+      <span class="muted small">or click to choose, or paste.</span>
+    </div>
+    <p class="small muted" style="margin:8px 0 14px">Checked and cleaned in your browser. Nothing is uploaded.</p>
+
+    <h2 style="font-size:1rem;margin:0 0 8px">Clean up</h2>
+    <label class="check"><input type="checkbox" name="stray" id="stray" checked> Remove stray specks</label>
+    <div class="sub">
+      <div class="field"><label for="speck" class="small">Treat separate bits smaller than this as specks (px)</label>
+        <div class="inline"><input id="speck" name="speck" type="number" min="1" max="100000" step="1" value="50"></div></div>
+      <div class="hint">Only bits that are far from the artwork or nearly invisible count, so dots on an "i" stay.</div>
+    </div>
+    <label class="check"><input type="checkbox" name="faint" id="faint" checked> Remove near-invisible pixels</label>
+    <div class="sub">
+      <label for="faintT" class="small">Opacity below <span id="faintT-out">10</span> of 255 (<span id="faintT-pct">4%</span>)</label>
+      <input id="faintT" name="faintT" type="range" min="1" max="64" step="1" value="10">
+    </div>
+    <label class="check"><input type="checkbox" name="defringe" id="defringe"> Clean up edge fringe (recolor soft edges from the art beside them)</label>
+    <label class="check"><input type="checkbox" name="harden" id="harden"> Harden edges (no semi-transparent pixels)</label>
+    <div class="sub" id="harden-sub">
+      <label for="hardT" class="small">Solid from <span id="hardT-out">128</span> of 255 opacity; below that is removed</label>
+      <input id="hardT" name="hardT" type="range" min="1" max="254" step="1" value="128">
+    </div>
+    <label class="check"><input type="checkbox" name="trim" id="trim" checked> Trim to the artwork</label>
+    <div class="sub">
+      <div class="inline"><label for="pad" class="small" style="margin:0">Padding</label><input id="pad" name="pad" type="number" min="0" max="2000" step="1" value="0"><span class="small muted">px on every side</span></div>
+    </div>
+
+    <div class="field" id="dpi-field" hidden>
+      <span class="label">This PNG has no DPI stored. Save it with</span>
+      <div class="seg" role="radiogroup" aria-label="DPI for the saved file">
+        <label><input type="radio" name="dpimode" value="300" checked>300 DPI</label>
+        <label><input type="radio" name="dpimode" value="none">None</label>
+        <label><input type="radio" name="dpimode" value="other">Other</label>
+      </div>
+      <input id="dpi-other" name="dpiother" type="number" min="1" max="65535" step="1" value="150" aria-label="Other DPI" style="margin-top:6px" hidden>
+    </div>
+    <p class="small muted" id="dpi-keep" hidden></p>
+    <button class="btn block" type="button" id="save" disabled>Download cleaned PNG</button>
+    <div id="save-msg" aria-live="polite"></div>
+  </form>
+
+  <div class="preview">
+    <div class="panel">
+      <div class="view-row">
+        <div class="seg" role="radiogroup" aria-label="View">
+          <label><input type="radio" name="view" value="whole" checked data-nopersist>Whole design</label>
+          <label><input type="radio" name="view" value="zoom" data-nopersist>Close-up</label>
+        </div>
+        <label class="check small" style="margin:0"><input type="checkbox" id="before" data-nopersist> Show original</label>
+        <label class="check small" style="margin:0"><input type="checkbox" id="marks" checked data-nopersist> Mark specks</label>
+      </div>
+      <div class="tiles" id="tiles">
+        <figure class="tile"><canvas data-bg="checker" width="300" height="300" aria-label="Preview on transparent checkerboard"></canvas><figcaption>Transparent</figcaption></figure>
+        <figure class="tile"><canvas data-bg="#ffffff" width="300" height="300" aria-label="Preview on a white shirt"></canvas><figcaption>White</figcaption></figure>
+        <figure class="tile"><canvas data-bg="#111111" width="300" height="300" aria-label="Preview on a black shirt"></canvas><figcaption>Black</figcaption></figure>
+        <figure class="tile"><canvas data-bg="#a4a5a9" width="300" height="300" aria-label="Preview on a heather grey shirt"></canvas><figcaption>Heather grey</figcaption></figure>
+        <figure class="tile"><canvas data-bg="#1f2a44" width="300" height="300" aria-label="Preview on a navy shirt"></canvas><figcaption>Navy</figcaption></figure>
+        <figure class="tile"><canvas data-bg="custom" width="300" height="300" aria-label="Preview on your color"></canvas><figcaption><label for="custom-bg">Your color</label><input type="color" id="custom-bg" value="#7b2335" data-nopersist></figcaption></figure>
+      </div>
+      <p class="small muted" id="view-hint" style="margin:6px 0 0">Click a spot on any preview to see it close up at 4× zoom.</p>
+      <div id="load-msg" aria-live="polite"></div>
+      <div class="progress" id="prog" hidden><div></div></div>
+    </div>
+    <div class="panel" id="report-panel" hidden>
+      <h2>What we found in <span id="fname"></span></h2>
+      <ul class="check-list" id="report"></ul>
+      <div class="result-grid" id="sizes" style="margin-top:10px"></div>
+    </div>
+    <div class="panel" id="batch-panel" hidden>
+      <h2>Batch <span class="badge pro">Pro</span></h2>
+      <p class="small muted" id="batch-sum"></p>
+      <div class="table-wrap"><table id="batch-table"><thead><tr><th>File</th><th>Transparent</th><th>Specks</th><th>Fringe</th><th>Trimmed size</th></tr></thead><tbody></tbody></table></div>
+      <div class="progress" id="bprog" hidden><div></div></div>
+      <div class="btn-row"><button class="btn pro" type="button" id="batch-go">Clean all and download zip</button></div>
+      <div id="bmsg" aria-live="polite"></div>
+    </div>
+    <div class="pro-box hide-if-pro" id="pro-hint" hidden>
+      <p><strong>Cleaning a whole collection?</strong> You dropped <span id="pro-count"></span> files; the free version checks one at a time (the first is shown). Pro applies these settings to every file and downloads them all in one zip with a CSV report.</p>
+      <button class="btn pro" type="button" data-pro-open="Cleaning and trimming many PNGs at once is part of Bleedline Pro.">See Pro</button>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+  <h2>How to use it</h2>
+  <ol>
+    <li>Drop your PNG. The report lists what it found: real transparency, stray specks, near-invisible pixels, soft edges and light or dark fringes.</li>
+    <li>Look at the shirt-color previews. Specks are circled in red. Click any spot to zoom in 4× and check the edges against dark and light fabric.</li>
+    <li>Leave the clean-up options that help ticked. Every change shows in the previews straight away; tick <strong>Show original</strong> to compare.</li>
+    <li>Download the cleaned PNG. It keeps the original's DPI and color profile.</li>
+  </ol>
+
+  <h2>Why transparent edges matter on a printed shirt</h2>
+  <p>On screen, a pixel at 3% opacity is invisible. A garment printer sees it differently. Direct-to-garment (DTG) printers put down a layer of white ink under the colors on dark fabric, and they decide where to print from the alpha channel: anything that isn't fully transparent can get ink. That's how a design that looked perfect on your screen comes back with a faint box around it, a scatter of grey dots, or a pale outline.</p>
+  <p>Three things cause most of it:</p>
+  <ul>
+    <li><strong>Stray specks.</strong> Background removal, magic-wand selections and soft erasers leave tiny islands of pixels at very low opacity, often far from the artwork. They also stretch the design's bounding box, so services that scale by the box print your design smaller than you meant.</li>
+    <li><strong>Fringes and halos.</strong> When artwork is cut from a white background, the anti-aliased edge pixels are a blend of the art and that white. On a white shirt nobody notices; on black or navy they form a thin light outline. A design cut from a dark background gets the opposite, a dark rim that shows on light shirts.</li>
+    <li><strong>Large soft areas.</strong> Drop shadows, glows and faded textures are semi-transparent by design. Printers reproduce partial opacity with halftone dots or a thinner layer of ink, which can look grainy, and the white underbase can show through as a pale haze on dark fabric. Keep them deliberate and test-print if they matter.</li>
+  </ul>
+
+  <h2>What each clean-up does</h2>
+  <ul>
+    <li><strong>Remove stray specks</strong> deletes small separate bits that are either nearly invisible or well away from the artwork. Larger pieces and anything close to the design are kept, so the dot of an "i", a full stop or a small star near the art survive. Raise the size if you have bigger debris, and check the red circles first.</li>
+    <li><strong>Remove near-invisible pixels</strong> makes every pixel below the opacity threshold fully transparent, including the faintest part of soft edges. At the default of 10 out of 255 (about 4%) nothing visible changes.</li>
+    <li><strong>Clean up edge fringe</strong> keeps the edge's softness but replaces its color with the color of the solid artwork right next to it, so the white (or black) left from the old background disappears.</li>
+    <li><strong>Harden edges</strong> turns every pixel either solid or fully transparent at the threshold you choose. Use it when a printer or a cutting machine (for stickers and vinyl) needs crisp edges.</li>
+    <li><strong>Trim to the artwork</strong> crops the empty transparent border, with optional even padding.</li>
+  </ul>
+
+  <h2>Is it really transparent?</h2>
+  <p>A surprising number of "transparent PNG" downloads aren't: the grey-and-white checkerboard is painted into the picture. The report's first line tells you whether the file has an alpha channel and how much of it is actually transparent. If it says no pixels are transparent, the background will print as a solid rectangle.</p>
+</section>

@@ -1,0 +1,22 @@
+{
+  "slug": "isbn-barcode-generator",
+  "category": "kdp",
+  "order": 6,
+  "title": "Free ISBN Barcode Generator (EAN-13 with Price Add-on)",
+  "h1": "ISBN barcode generator",
+  "description": "Turn an ISBN into a print-ready EAN-13 book barcode with the 5-digit price add-on. Download vector SVG, PDF or 300/600 DPI PNG. Free, no sign-up.",
+  "intro": "Type your ISBN and get the scannable EAN-13 barcode that goes on a book's back cover, with the optional 5-digit price code. Download it as vector SVG or PDF for sharp printing, or as a high-resolution PNG.",
+  "card": "EAN-13 book barcodes with the price add-on, as SVG, PDF or PNG.",
+  "free": "Everything",
+  "related": ["kdp-cover-calculator", "kdp-royalty-calculator"],
+  "lastReviewed": "2026-10-19",
+  "sources": [{"name": "KDP barcode guidelines", "url": "https://kdp.amazon.com/en_US/help/topic/G5HDYGP4BXLX4RUW"}, {"name": "BISG barcoding guidelines", "url": "https://www.bisg.org/barcoding-guidelines-for-the-us-book-industry"}],
+  "faq": [
+    {"q": "Do I need my own barcode for Amazon KDP?", "a": "No. If your book has an ISBN and you leave the barcode area clear, KDP adds a barcode for you in a 2 × 1.2 in white box at the lower right of the back cover. You only need your own when you use your own ISBN and want to control where the barcode sits, or when you print the same cover with another printer such as IngramSpark."},
+    {"q": "What does the 5-digit add-on mean?", "a": "It's the price code read by bookstore scanners. A first digit of 5 means US dollars and the other four are the price, so 51999 means $19.99. Use 90000 when you don't want to print a price, which is the usual choice for books sold online, and 59999 for a US price above $99.98."},
+    {"q": "Can I use an ISBN-10?", "a": "Yes. Book barcodes always encode the 13-digit form, so the tool converts an ISBN-10 to its 978 ISBN-13 and recalculates the check digit."},
+    {"q": "Which file type should I use?", "a": "Use SVG or PDF if your cover software supports vector files, because the bars stay perfectly sharp at any size. Use the 600 DPI PNG for tools such as Canva."},
+    {"q": "How big should a book barcode be?", "a": "At 100% a book barcode with the price add-on is about 1 in tall and 2 3/16 in wide. The book trade allows 80% to 200%. KDP suggests leaving a 2 × 1.2 in area, and 1.4 × 0.8 in at minimum."},
+    {"q": "Is a barcode the same as buying an ISBN?", "a": "No. The barcode only encodes an ISBN you already own. ISBNs are issued by your country's ISBN agency, such as Bowker in the US, or given free by some publishing platforms for use on their own editions."}
+  ]
+}

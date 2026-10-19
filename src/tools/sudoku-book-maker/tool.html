@@ -1,0 +1,177 @@
+<style>
+.sd-sec { border-top: 1px solid var(--border); margin: 18px -18px 14px; padding: 14px 18px 0; }
+.sd-sec h2 { margin: 0 0 10px; font-size: 1.05rem; }
+.sd-sections { display: grid; gap: 8px; margin-bottom: 8px; }
+.sd-srow { display: grid; grid-template-columns: 1fr 90px auto; gap: 8px; align-items: center; }
+.sd-srow .btn { padding: 6px 10px; min-height: 40px; }
+.sd-inline { display: flex; gap: 8px; align-items: center; }
+.sd-inline input { flex: 1; min-width: 0; }
+.sd-inline .btn { flex: none; padding: 8px 12px; }
+.sd-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.sd-nav { display: flex; gap: 6px; align-items: center; }
+.sd-nav .btn { padding: 6px 12px; min-height: 36px; }
+#sd-preview svg { width: 100%; max-width: 480px; height: auto; background: #fff; border-radius: 4px; }
+.sd-tech { font-size: .85rem; color: var(--muted); margin: 8px 0 0; }
+</style>
+
+<div class="tool">
+  <form class="panel" id="sd-form" autocomplete="off" onsubmit="return false">
+    <h2>Puzzles</h2>
+    <div class="field">
+      <span class="label">Difficulty</span>
+      <div class="seg" role="radiogroup" aria-label="Difficulty">
+        <label><input type="radio" name="level" value="easy">Easy</label>
+        <label><input type="radio" name="level" value="medium" checked>Medium</label>
+        <label><input type="radio" name="level" value="hard">Hard</label>
+        <label><input type="radio" name="level" value="expert">Expert</label>
+        <label><input type="radio" name="level" value="mixed">Sections (Pro)</label>
+      </div>
+    </div>
+    <div class="field" id="sd-count-row">
+      <label for="sd-count">Number of puzzles</label>
+      <input id="sd-count" name="count" type="number" min="1" max="500" step="1" value="6" inputmode="numeric">
+      <div class="hint">Free PDFs hold up to 6 puzzles. Pro goes up to 500.</div>
+    </div>
+    <div id="sd-sections-box" hidden>
+      <div class="field" style="margin-bottom:6px"><span class="label">Book sections, in order</span></div>
+      <div class="sd-sections" id="sd-sections"></div>
+      <button class="btn ghost" type="button" id="sd-sec-add">+ Add section</button>
+      <div class="hint" style="margin-top:6px">Each section starts on a new page with its own heading, such as 50 easy, then 50 medium, then 50 hard. Up to 500 puzzles in all.</div>
+    </div>
+    <div class="field" style="margin-top:14px">
+      <label for="sd-seed">Seed</label>
+      <div class="sd-inline">
+        <input id="sd-seed" name="seed" type="text" value="1" maxlength="24">
+        <button class="btn ghost" type="button" id="sd-reseed" title="New random seed" aria-label="New random seed">↻</button>
+      </div>
+      <div class="hint">The same seed and settings always give the same puzzles.</div>
+    </div>
+    <button class="btn block" type="button" id="sd-gen">Generate puzzles</button>
+    <div id="sd-gen-progress" hidden>
+      <div class="progress" role="progressbar" aria-label="Generating puzzles" aria-valuemin="0" aria-valuemax="100"><div></div></div>
+      <p class="small muted" id="sd-gen-text"></p>
+    </div>
+
+    <div class="sd-sec">
+      <h2>PDF</h2>
+      <div class="field">
+        <span class="label">Output</span>
+        <div class="seg" role="radiogroup" aria-label="Output type">
+          <label><input type="radio" name="mode" value="print" checked>Printable pages</label>
+          <label><input type="radio" name="mode" value="kdp">KDP book interior</label>
+        </div>
+      </div>
+      <div class="field" id="sd-paper-row">
+        <span class="label">Paper</span>
+        <div class="seg" role="radiogroup" aria-label="Paper size">
+          <label><input type="radio" name="paper" value="letter" checked>US Letter</label>
+          <label><input type="radio" name="paper" value="a4">A4</label>
+        </div>
+      </div>
+      <div id="sd-kdp-rows" hidden>
+        <div class="field">
+          <label for="sd-trim">Trim size</label>
+          <select id="sd-trim" name="trim"></select>
+        </div>
+        <label class="check"><input type="checkbox" name="bleed" id="sd-bleed"> Bleed (only if you'll add artwork that runs off the page edge)</label>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <div class="field">
+          <label for="sd-per">Puzzles per page</label>
+          <select id="sd-per" name="per">
+            <option value="1">1 (large print)</option>
+            <option value="2" selected>2</option>
+            <option value="4">4</option>
+            <option value="6">6</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sd-solper">Solutions per page</label>
+          <select id="sd-solper" name="solper">
+            <option value="4">4</option>
+            <option value="6" selected>6</option>
+            <option value="9">9</option>
+          </select>
+        </div>
+      </div>
+      <label class="check"><input type="checkbox" name="titlePage" id="sd-titlepage"> Title page</label>
+      <div id="sd-title-rows" hidden>
+        <div class="field">
+          <label for="sd-btitle">Book title</label>
+          <input id="sd-btitle" name="btitle" type="text" maxlength="120" value="Sudoku Puzzles">
+        </div>
+        <div class="field">
+          <label for="sd-bsub">Subtitle (optional)</label>
+          <input id="sd-bsub" name="bsub" type="text" maxlength="160" placeholder="200 easy to hard puzzles with solutions">
+        </div>
+      </div>
+      <label class="check"><input type="checkbox" name="howto" checked> "How to play" page</label>
+      <label class="check"><input type="checkbox" name="numbers" checked> Page numbers</label>
+      <label class="check"><input type="checkbox" name="answers" id="sd-answers" checked> Solutions at the back</label>
+    </div>
+  </form>
+
+  <div class="preview">
+    <div class="panel">
+      <div class="sd-bar">
+        <div class="sd-nav">
+          <button class="btn ghost" type="button" id="sd-prev" aria-label="Previous puzzle">‹</button>
+          <span id="sd-pos" class="small muted" aria-live="polite"></span>
+          <button class="btn ghost" type="button" id="sd-next" aria-label="Next puzzle">›</button>
+        </div>
+        <label class="check" style="margin:0"><input type="checkbox" id="sd-show"> Show solution</label>
+      </div>
+      <div class="canvas-box plain" id="sd-preview" aria-live="polite"><p class="muted">Generating…</p></div>
+      <p class="sd-tech" id="sd-tech"></p>
+      <div class="result-grid" id="sd-stats" style="margin-top:12px"></div>
+      <div id="sd-msg"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" id="sd-pdf">Download PDF</button>
+      </div>
+      <div id="sd-pdf-progress" hidden>
+        <div class="progress" role="progressbar" aria-label="PDF progress" aria-valuemin="0" aria-valuemax="100"><div></div></div>
+        <p class="small muted" id="sd-pdf-text"></p>
+      </div>
+      <div id="sd-export-msg" aria-live="polite"></div>
+      <div class="pro-box hide-if-pro">
+        <p><strong>Free:</strong> PDFs of up to 6 puzzles at any difficulty, with solutions, as printable pages or a KDP interior.</p>
+        <p><strong>Pro</strong> makes full books: up to 500 puzzles per PDF, and sections of mixed difficulty (say 50 easy, 50 medium, 50 hard) each with its own heading.</p>
+        <button class="btn pro" type="button" data-pro-open="Sudoku books of up to 500 puzzles, with easy-to-expert sections.">See Pro</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+  <h2>How to use the sudoku book maker</h2>
+  <ol>
+    <li><strong>Pick a difficulty and how many puzzles you want.</strong> With Pro you can build sections instead, for a book that gets harder as it goes.</li>
+    <li><strong>Press Generate.</strong> Puzzles are made in the background, several at a time on computers with more than one core, so the page stays responsive. 500 puzzles usually take well under a minute.</li>
+    <li><strong>Check the preview.</strong> Flip through the puzzles, tick <em>Show solution</em> to see the answer, and read which solving techniques each puzzle needs.</li>
+    <li><strong>Choose the layout and download.</strong> One puzzle per page is large print. Two per page suits most books. Four or six per page makes a compact pocket book or worksheet.</li>
+  </ol>
+
+  <h2>How the difficulty is graded</h2>
+  <p>Every puzzle has exactly one solution. The generator checks this with a solver that counts solutions and stops at two, so a puzzle with two answers is never kept.</p>
+  <p>Difficulty isn't just the number of clues, because a puzzle with few clues can still be easy. Each puzzle is solved step by step by a grader that works like a person: it always uses the simplest technique that makes progress. The puzzle's level is set by the hardest technique it needs, and the number of givens has to fall in that level's range.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Level</th><th>Hardest technique needed</th><th>Givens</th></tr></thead>
+      <tbody>
+        <tr><td>Easy</td><td>Naked and hidden singles only</td><td>36–40</td></tr>
+        <tr><td>Medium</td><td>At least one pointing pair, box/line reduction, naked pair or hidden pair</td><td>28–35</td></tr>
+        <tr><td>Hard</td><td>At least one naked or hidden triple, X-Wing or XY-Wing</td><td>24–31</td></tr>
+        <tr><td>Expert</td><td>At least one Swordfish, Jellyfish, XYZ-Wing, quad, simple colouring or XY-Chain</td><td>22–28</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Every puzzle can be solved by logic with the techniques above. None needs guessing. Puzzle rating is not an exact science, so a hard puzzle can feel easy to someone who spots the key step early, but the levels go up steadily and readers get what the label says.</p>
+
+  <h2>Making a sudoku book for Amazon KDP</h2>
+  <p><strong>Low-content or not?</strong> KDP's help page lists puzzle books among the examples that are generally not low-content. That means you publish a sudoku book as a regular paperback: it can have a free KDP ISBN and you don't tick the low-content box. KDP's rules can change, so read its low-content page before you publish.</p>
+  <p><strong>Trim size.</strong> 8.5 × 11 in works for large print and two puzzles a page. 6 × 9 in is cheaper to print and handy for travel books, with one or two puzzles a page. Four or six puzzles per page on 6 × 9 makes small grids, so check the printed cell size the tool shows.</p>
+  <p><strong>Margins.</strong> KDP's minimum inside margin depends on the page count: 0.375 in up to 150 pages, 0.5 in up to 300 pages, 0.625 in up to 500 pages and more after that. The tool sets the gutter from the final page count and adds a little extra on every side, so nothing gets lost in the binding.</p>
+  <p><strong>Page count.</strong> KDP paperbacks need at least 24 pages and an even page count. The tool adds blank pages at the end only when it has to. More puzzles are a better way to reach 24 pages than blank paper.</p>
+  <p><strong>Why the solutions matter.</strong> Every sudoku book needs an answer key. Readers use it to check their work and to get unstuck, and a book without one draws complaints. The solutions section prints the givens in bold so it's easy to match an answer to its puzzle.</p>
+  <p><strong>What KDP checks.</strong> On upload, KDP's previewer checks that the page size matches the trim and bleed you chose, that fonts are embedded, and that nothing sits outside the margins. The PDFs here embed their fonts and keep every page inside the live area. Make your cover separately once you know the final page count, because the spine width depends on it.</p>
+</section>

@@ -1,0 +1,115 @@
+<style>
+.mc-svg { width: 100%; height: auto; display: block; }
+.mc-svg .pg { fill: var(--warn-soft); stroke: var(--text); stroke-width: 1.2; }
+.mc-svg .gut { fill: var(--pro-soft); }
+.mc-svg .bleed { fill: var(--danger-soft); }
+.mc-svg .live { fill: var(--surface); stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.mc-svg .trim { fill: none; stroke: var(--danger); stroke-width: 1.2; }
+.mc-svg .spine { stroke: var(--text); stroke-width: 2; }
+.mc-svg .dim { stroke: var(--muted); stroke-width: 1; fill: none; }
+.mc-svg text { fill: var(--text); font-family: var(--font); }
+.mc-svg .mut { fill: var(--muted); }
+.mc-svg .acc { fill: var(--accent); font-weight: 600; }
+.mc-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .8rem; color: var(--muted); margin-top: 8px; }
+.mc-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; border: 1px solid var(--border); }
+.mc-setup { position: relative; }
+.mc-setup pre { background: var(--surface-2); border-radius: 8px; padding: 12px; margin: 6px 0 0; font: .85rem/1.55 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.mc-setup .btn { position: absolute; top: 0; right: 0; min-height: 30px; padding: 3px 10px; font-size: .8rem; }
+.mc-setup h3 { margin: 18px 0 0; font-size: 1rem; padding-right: 70px; }
+.mc-table td:first-child { color: var(--muted); }
+</style>
+<div class="tool">
+  <form class="panel" id="mc-form" autocomplete="off" onsubmit="return false">
+    <div class="field">
+      <span class="label" id="fmt-l">Format</span>
+      <div class="seg" role="radiogroup" aria-labelledby="fmt-l">
+        <label><input type="radio" name="format" value="paperback" checked>Paperback</label>
+        <label><input type="radio" name="format" value="hardcover">Hardcover</label>
+      </div>
+    </div>
+    <div class="field">
+      <label for="trim">Trim size</label>
+      <select id="trim" name="trim"></select>
+    </div>
+    <div class="field">
+      <label for="pages">Page count</label>
+      <input id="pages" name="pages" type="number" min="24" max="828" step="2" value="200" inputmode="numeric">
+      <div class="hint">The total number of pages in your interior PDF, including blank ones.</div>
+    </div>
+    <div class="field">
+      <span class="label" id="bleed-l">Bleed</span>
+      <div class="seg" role="radiogroup" aria-labelledby="bleed-l">
+        <label><input type="radio" name="bleed" value="no" checked>No bleed</label>
+        <label><input type="radio" name="bleed" value="yes">Bleed</label>
+      </div>
+      <div class="hint">Choose bleed only if images or colour run off the edge of an interior page.</div>
+    </div>
+    <div class="field">
+      <label for="ink">Ink and paper</label>
+      <select id="ink" name="ink">
+        <option value="white">Black and white, white paper</option>
+        <option value="cream">Black and white, cream paper</option>
+        <option value="groundwood">Black and white, groundwood paper</option>
+        <option value="std">Standard colour, white paper</option>
+        <option value="premium">Premium colour, white paper</option>
+      </select>
+      <div class="hint">Doesn't change the margins. It sets the page limits and spine width.</div>
+    </div>
+    <div class="field">
+      <label for="extra">Extra margin for comfort (in)</label>
+      <input id="extra" name="extra" type="number" min="0" max="1.5" step="0.0625" value="0" inputmode="decimal">
+      <div class="hint">0 gives KDP's minimums. Most novels use more: try 0.25 for a roomier page. Added to every side.</div>
+    </div>
+    <div class="field">
+      <span class="label" id="unit-l">Show setup values in</span>
+      <div class="seg" role="radiogroup" aria-labelledby="unit-l">
+        <label><input type="radio" name="unit" value="in" checked>Inches</label>
+        <label><input type="radio" name="unit" value="mm">Millimetres</label>
+      </div>
+    </div>
+  </form>
+  <div class="preview">
+    <div class="panel">
+      <div id="mc-msg"></div>
+      <div class="result-grid" id="mc-stats"></div>
+      <h2 style="margin-top:18px">Two-page spread, to scale</h2>
+      <div id="mc-diagram"></div>
+      <div class="mc-legend">
+        <span><i style="background:var(--danger-soft)"></i>Bleed (trimmed off)</span>
+        <span><i style="background:var(--warn-soft)"></i><span id="mc-lg-margin">Outside, top and bottom margin</span></span>
+        <span><i style="background:var(--pro-soft)"></i><span id="mc-lg-gutter">Gutter (inside margin)</span></span>
+        <span><i style="background:var(--surface);border:1.5px dashed var(--accent)"></i>Safe live area</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" style="margin-top:16px">
+  <h2>Page sizes and margins</h2>
+  <div class="table-wrap"><table class="mc-table" id="mc-table"></table></div>
+  <div id="mc-setups"></div>
+</div>
+
+<section class="content">
+  <h2>How KDP margins work</h2>
+  <p>Every interior page has a <strong>safe live area</strong>: the part of the page where text, page numbers and anything else that matters must sit. Around it are four margins. The top, bottom and outside margins protect your text from the trimming blade, because the cut can land slightly differently on each copy. The inside margin, next to the spine, is the <strong>gutter</strong>.</p>
+  <h3>Why the gutter grows with page count</h3>
+  <p>Paperbacks are glued along the spine, so they never open completely flat. Near the spine the pages curve away into the binding, and the thicker the book, the deeper that curve. A 100-page book loses only a sliver of each page; an 800-page book swallows almost an inch. KDP sets the minimum gutter by page count:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Page count</th><th>Inside margin (gutter)</th><th>Outside, top, bottom: no bleed</th><th>With bleed</th></tr></thead>
+    <tbody>
+      <tr><td>24 to 150</td><td>0.375 in (9.6 mm)</td><td rowspan="5">at least 0.25 in (6.4 mm)</td><td rowspan="5">at least 0.375 in (9.6 mm)</td></tr>
+      <tr><td>151 to 300</td><td>0.5 in (12.7 mm)</td></tr>
+      <tr><td>301 to 500</td><td>0.625 in (15.9 mm)</td></tr>
+      <tr><td>501 to 700</td><td>0.75 in (19.1 mm)</td></tr>
+      <tr><td>701 to 828</td><td>0.875 in (22.3 mm)</td></tr>
+    </tbody>
+  </table></div>
+  <p>These are minimums. Text set right at the limit looks cramped, which is why most trade books use 0.5 to 0.75 in on the outside and more in the gutter. Use the extra margin box to try a roomier page. If you add pages later and cross one of the thresholds, re-check the gutter: 300 pages needs 0.5 in, 302 pages needs 0.625 in.</p>
+  <h3>Left and right pages are mirrored</h3>
+  <p>Page 1 of a book is always a right-hand page, so every odd page is on the right with the gutter on its left edge, and every even page is on the left with the gutter on its right edge. That's why word processors call this setting <em>mirror margins</em> (Word) or <em>mirrored</em> pages (LibreOffice): the inside and outside margins swap from one page to the next.</p>
+  <h3>What bleed is</h3>
+  <p>Bleed is extra artwork beyond the trim line, there so the printer can cut through it without leaving a white sliver. On KDP, an interior with bleed is 0.125 in (3.2 mm) larger on the outside edge and on the top and bottom, so a 6 × 9 in book becomes a 6.125 × 9.25 in PDF (441 × 666 pt). There is no bleed on the gutter side, because that edge is glued into the spine. If any page bleeds, set up the whole file with bleed and choose "Bleed (PDF only)" when you upload.</p>
+  <h3>Setting up Word, Google Docs or LibreOffice</h3>
+  <p>The setup boxes above list the exact values. Set the page size before the margins, and apply both to the whole document. Word and LibreOffice have true mirrored margins. Google Docs doesn't, so the Docs values put the larger inside margin on both sides: you lose a little space on the outside edge, but the file is safe on every page. After writing, export a PDF and check that its page size matches the size here, with every font embedded.</p>
+</section>

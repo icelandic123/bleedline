@@ -1,0 +1,167 @@
+<style>
+.tool > .preview { min-width: 0; }
+.presets { border: 1px solid var(--border); border-radius: 8px; max-height: 330px; overflow: auto; background: var(--bg); }
+.presets fieldset { border: 0; margin: 0; padding: 4px 0; }
+.presets legend { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); padding: 8px 10px 2px; }
+.presets label { display: flex; gap: 8px; align-items: flex-start; padding: 5px 10px; cursor: pointer; font-size: .9rem; }
+.presets label:hover { background: var(--surface-2); }
+.presets label:has(input:checked) { background: var(--accent-soft); }
+.presets input { flex: none; margin-top: 2px; }
+.presets .dim { margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 8px; }
+.rs-canvas-wrap { position: relative; }
+#rs-canvas { touch-action: none; cursor: default; border-radius: 4px; }
+#rs-canvas.draggable { cursor: grab; }
+#rs-canvas.dragging { cursor: grabbing; }
+#rs-canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.seg-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.seg-row .field { margin-bottom: 0; }
+.color-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.queue { list-style: none; padding: 0; margin: 8px 0; font-size: .88rem; }
+.queue li { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; border-bottom: 1px dashed var(--border); }
+.queue li span:first-child { overflow-wrap: anywhere; }
+.queue li span:last-child { color: var(--muted); white-space: nowrap; }
+</style>
+
+<div class="tool">
+  <form class="panel" id="rs-form" autocomplete="off" onsubmit="return false">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose image files">
+      <input type="file" id="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" multiple>
+      <strong>Drop your design here</strong>
+      <span class="muted small">or click to choose, or paste. PNG, JPEG or WebP.</span>
+    </div>
+    <p class="small muted" style="margin:8px 0 14px">Resized in your browser. Nothing is uploaded.</p>
+
+    <div class="field">
+      <span class="label" id="preset-label">Preset</span>
+      <div class="presets" id="presets" role="group" aria-labelledby="preset-label"></div>
+      <div class="hint" id="preset-hint">Tick one preset. <span class="hide-if-pro">With <a href="#" data-pro-open="Exporting one design into many presets at once is part of Bleedline Pro.">Pro</a> you can tick several and get them all in one zip.</span><span class="show-if-pro">Tick as many as you like: Pro exports them all in one zip.</span></div>
+    </div>
+    <div class="row" id="custom-row" hidden>
+      <div class="field"><label for="cw">Width (px)</label><input id="cw" name="cw" type="number" min="1" max="32767" step="1" value="4500"></div>
+      <div class="field"><label for="ch">Height (px)</label><input id="ch" name="ch" type="number" min="1" max="32767" step="1" value="5400"></div>
+    </div>
+
+    <div class="field">
+      <span class="label">Fit</span>
+      <div class="seg" role="radiogroup" aria-label="Fit">
+        <label><input type="radio" name="mode" value="fit" checked>Fit inside (pad)</label>
+        <label><input type="radio" name="mode" value="fill">Fill (crop)</label>
+      </div>
+      <div class="hint" id="mode-hint">The whole design fits, with empty space around it.</div>
+    </div>
+    <div class="seg-row">
+      <div class="field">
+        <span class="label">Vertical</span>
+        <div class="seg" role="radiogroup" aria-label="Vertical position">
+          <label><input type="radio" name="valign" value="0" checked>Top</label>
+          <label><input type="radio" name="valign" value="0.5">Center</label>
+          <label><input type="radio" name="valign" value="1">Bottom</label>
+        </div>
+      </div>
+      <div class="field">
+        <span class="label">Horizontal</span>
+        <div class="seg" role="radiogroup" aria-label="Horizontal position">
+          <label><input type="radio" name="halign" value="0">Left</label>
+          <label><input type="radio" name="halign" value="0.5" checked>Center</label>
+          <label><input type="radio" name="halign" value="1">Right</label>
+        </div>
+      </div>
+    </div>
+    <label class="check" style="margin-top:12px"><input type="checkbox" name="trim" id="trim" checked> Trim empty transparent edges first</label>
+    <div class="hint" style="margin:-4px 0 12px 26px">So the artwork, not its empty border, fills the print area. Ignores near-invisible pixels under 4% opacity.</div>
+
+    <div class="field">
+      <span class="label">Format</span>
+      <div class="seg" role="radiogroup" aria-label="Format">
+        <label><input type="radio" name="fmt" value="png" checked>PNG</label>
+        <label><input type="radio" name="fmt" value="jpeg">JPEG</label>
+      </div>
+    </div>
+    <div class="field" id="q-field" hidden>
+      <label for="quality">JPEG quality: <span id="q-out">90</span></label>
+      <input id="quality" name="quality" type="range" min="60" max="100" step="1" value="90">
+    </div>
+    <div class="field">
+      <span class="label">Background</span>
+      <div class="color-row">
+        <div class="seg" role="radiogroup" aria-label="Background">
+          <label id="bg-transparent-label"><input type="radio" name="bg" value="transparent" checked>Transparent</label>
+          <label><input type="radio" name="bg" value="white">White</label>
+          <label><input type="radio" name="bg" value="custom">Color</label>
+        </div>
+        <input type="color" id="bgcolor" name="bgcolor" value="#000000" aria-label="Background color">
+      </div>
+      <div class="hint" id="bg-hint"></div>
+    </div>
+    <div class="field">
+      <label for="dpi">DPI written into the file</label>
+      <input id="dpi" name="dpi" type="number" min="1" max="65535" step="1" value="300">
+      <div class="hint">A label for design apps. Platforms check the pixel size.</div>
+    </div>
+    <label class="check show-if-pro" id="rec-row"><input type="checkbox" name="rec" id="rec" checked> When several presets are ticked, use each one's recommended fit, position and format</label>
+  </form>
+
+  <div class="preview">
+    <div class="panel">
+      <div class="field" id="pv-pick-row" hidden style="margin-bottom:8px">
+        <label for="pv-pick">Preview</label>
+        <select id="pv-pick" data-nopersist></select>
+      </div>
+      <div class="canvas-box plain rs-canvas-wrap" id="pv-box"><span class="muted" id="pv-empty">Your design will appear here.</span><canvas id="rs-canvas" width="10" height="10" tabindex="0" aria-label="Preview of the output. In fill mode, drag or use the arrow keys to move the crop." hidden></canvas></div>
+      <p class="small muted" id="drag-hint" hidden style="margin:6px 0 0">Drag the image (or use the arrow keys) to choose what stays in the frame.</p>
+      <div class="result-grid" id="stats" style="margin-top:12px"></div>
+      <div id="warn"></div>
+      <div class="progress" id="prog" hidden><div></div></div>
+      <div class="btn-row">
+        <button class="btn" type="button" id="go" disabled>Download PNG</button>
+      </div>
+      <div id="msg" aria-live="polite"></div>
+    </div>
+
+    <div class="panel" id="batch-panel" hidden>
+      <h2>Batch <span class="badge pro">Pro</span></h2>
+      <p class="small muted" id="batch-sum"></p>
+      <ul class="queue" id="queue"></ul>
+      <div class="progress" id="bprog" hidden><div></div></div>
+      <div class="btn-row"><button class="btn pro" type="button" id="batch-go">Make zip</button><button class="btn ghost" type="button" id="batch-clear">Clear files</button></div>
+      <div id="bmsg" aria-live="polite"></div>
+    </div>
+
+    <div class="pro-box hide-if-pro" id="pro-hint" hidden>
+      <p><strong>Resizing a whole collection?</strong> You dropped <span id="pro-count"></span> files; the free version works on one at a time (the first is loaded). Pro resizes every file into every preset you tick and hands you one zip, named <code>design-preset.png</code>.</p>
+      <button class="btn pro" type="button" data-pro-open="Batch resizing many designs into many presets is part of Bleedline Pro.">See Pro</button>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+  <h2>How to use it</h2>
+  <ol>
+    <li>Drop your design. A transparent PNG is best for anything printed on a product.</li>
+    <li>Tick a preset, or choose <strong>Custom size</strong> and type the pixels you need.</li>
+    <li>Check the preview. For shirts, <strong>Fit inside</strong> with <strong>Top</strong> keeps the whole design and puts it at chest height. For posters and listing photos, <strong>Fill</strong> covers the frame; drag the image to choose the crop.</li>
+    <li>Download. The file has exactly the preset's pixel size, keeps transparency (PNG), and is labelled 300 DPI.</li>
+  </ol>
+
+  <h2>Why every marketplace wants a different file</h2>
+  <p>Each print-on-demand service prints on its own blanks with its own print areas, so each asks for a different canvas. Sending the same file everywhere usually works, but the design ends up a different size or position on each product. Exporting to each service's dimensions puts you in control of where it lands. The presets use only numbers we found on each service's own help pages (linked at the bottom of this page); where a service publishes only a minimum, the preset uses that minimum, and bigger is fine.</p>
+  <ul>
+    <li><strong>Redbubble</strong> checks pixels only; the DPI label doesn't matter. Its minimums are, for example, 3873 × 4814 px for the men's graphic T-shirt, 2875 × 3900 for the premium T-shirt and 2400 × 3200 for other apparel. Files over 13,500 px on a side or 300 MB are rejected, and transparent PNG is needed for apparel and stickers. Stickers are best uploaded at 2800 × 2800 and art prints at 3840 × 3840.</li>
+    <li><strong>TeePublic</strong> asks for a transparent PNG at 150 DPI, at least 1500 × 1995 px (not counting empty transparent edges), and at least 5000 × 5500 px to enable every product.</li>
+    <li><strong>Spring</strong> uses 3720 × 4950 px for standard apparel, PNG, up to 50 MB.</li>
+    <li><strong>Printful</strong> works from print areas in inches: 12 × 16 in for the standard DTG front, larger 15 × 18 in on some products. At 300 DPI those are 3600 × 4800 and 4500 × 5400 px. Printful asks for 150 to 300 DPI depending on the product, and no more than 300.</li>
+    <li><strong>Spreadshop</strong> recommends at least 4000 px on the longest side, at least 1000 px on the shorter side, and files up to 10 MB.</li>
+    <li><strong>Etsy</strong> recommends listing photos of at least 2000 × 2000 px (the first photo needs at least 635 × 635), in sRGB, and JPEG or PNG without transparency. Files over 1 MB can fail to upload on slow connections, so JPEG at quality 85 to 90 is a good choice.</li>
+  </ul>
+
+  <h2>Pad or crop, and where the design sits</h2>
+  <p><strong>Fit inside</strong> scales the design until it touches the frame on one side and fills the rest with transparency (or a color). Nothing is cut off. That's what you want for garments, stickers, mugs and phone cases, where the empty part simply doesn't print. Turn on <strong>Trim empty transparent edges</strong> so a wide border of nothing in your source file doesn't shrink the artwork.</p>
+  <p><strong>Fill</strong> scales the design until it covers the frame and crops what sticks out. Use it for posters, art prints, canvases, cards and listing photos, which print or show edge to edge. Drag the preview to choose the crop.</p>
+  <p>The tool never stretches. Changing the shape of artwork to fit a frame distorts it, and printers will happily print the distortion.</p>
+
+  <h2>Upscaling, and why the tool warns you</h2>
+  <p>Resizing down throws away pixels you don't need, and done well it looks as sharp as the original. Resizing up has to invent pixels between the ones that exist. A good filter makes that smooth rather than blocky, but it can't create detail, so a design scaled up 2× looks soft when printed big. The tool shows the scale factor and warns above 1.5×. If you see the warning, export the design bigger from your design app (vector artwork can be exported at any size) rather than upscaling here.</p>
+
+  <h2>How the resizing works</h2>
+  <p>Browsers' built-in image scaling cuts corners when shrinking by a lot, which leaves jagged or shimmering edges. This tool resamples every pixel itself, in strips so even a 100-megapixel poster won't freeze the tab, using a bicubic (Catmull-Rom) filter widened when shrinking so that every source pixel counts. It works in premultiplied alpha, which is what keeps transparent edges free of dark fringes, and the filter never adds faint pixels outside your artwork's edges. PNGs are then written directly, so the output isn't limited by the browser's canvas size.</p>
+</section>

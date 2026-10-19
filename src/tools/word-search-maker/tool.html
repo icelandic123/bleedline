@@ -1,0 +1,207 @@
+<style>
+.ws-pick { display: flex; gap: 8px; align-items: center; }
+.ws-pick select { flex: 1; min-width: 0; }
+.ws-pick .btn { flex: none; padding: 8px 12px; }
+.ws-words { min-height: 170px; }
+.ws-dirs { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.ws-sec { border-top: 1px solid var(--border); margin: 18px -18px 14px; padding: 14px 18px 0; }
+.ws-sec h2 { margin: 0 0 10px; font-size: 1.05rem; }
+.ws-preview-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.ws-nav { display: flex; gap: 6px; align-items: center; }
+.ws-nav .btn { padding: 6px 12px; min-height: 36px; }
+#ws-preview svg { width: 100%; max-width: 560px; height: auto; background: #fff; border-radius: 4px; }
+.ws-bulk textarea { min-height: 160px; font-family: var(--mono); font-size: .9rem; }
+details.ws-more > summary { cursor: pointer; font-weight: 600; font-size: .9rem; margin: 6px 0; }
+.ws-progress { margin-top: 10px; }
+</style>
+
+<div class="tool">
+  <form class="panel" id="ws-form" autocomplete="off" onsubmit="return false">
+    <h2>Puzzles</h2>
+    <div class="field">
+      <label for="ws-pick">Editing</label>
+      <div class="ws-pick">
+        <select id="ws-pick" data-nopersist aria-describedby="ws-count"></select>
+        <button class="btn ghost" type="button" id="ws-add" title="Add an empty puzzle">+ New</button>
+        <button class="btn ghost" type="button" id="ws-del" title="Delete this puzzle" aria-label="Delete this puzzle">Delete</button>
+      </div>
+      <div class="hint" id="ws-count"></div>
+    </div>
+    <div class="field">
+      <label for="ws-title">Title</label>
+      <input id="ws-title" type="text" data-nopersist maxlength="80">
+    </div>
+    <div class="field">
+      <label for="ws-words">Words</label>
+      <textarea id="ws-words" class="ws-words" data-nopersist spellcheck="true"></textarea>
+      <div class="hint">One per line, or separated by commas. Spaces and hyphens are left out of the grid but kept in the word list ("ice cream" hides as ICECREAM).</div>
+    </div>
+    <div class="field">
+      <label for="ws-theme">Add a ready-made list</label>
+      <div class="ws-pick">
+        <select id="ws-theme" data-nopersist></select>
+        <button class="btn secondary" type="button" id="ws-theme-add">Add</button>
+      </div>
+      <div class="hint"><button class="btn ghost" type="button" id="ws-theme-all" style="margin-top:6px">Add all <span id="ws-theme-n"></span> themes as puzzles</button></div>
+    </div>
+    <details class="ws-more ws-bulk">
+      <summary>Paste many puzzles at once</summary>
+      <div class="field">
+        <label for="ws-bulk">One block per puzzle: the first line is the title, the words follow. Leave a blank line between puzzles.</label>
+        <textarea id="ws-bulk" data-nopersist placeholder="Pets&#10;cat&#10;dog&#10;hamster&#10;&#10;Birds&#10;robin, sparrow, owl, eagle"></textarea>
+      </div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="btn secondary" type="button" id="ws-bulk-add">Add as new puzzles</button>
+        <button class="btn ghost" type="button" id="ws-bulk-replace">Replace all puzzles</button>
+      </div>
+      <div id="ws-bulk-msg" aria-live="polite"></div>
+    </details>
+
+    <div class="ws-sec">
+      <h2>Grid</h2>
+      <div class="row">
+        <div class="field">
+          <label for="ws-size">Grid size</label>
+          <select id="ws-size" name="size"></select>
+        </div>
+        <div class="field">
+          <label for="ws-seed">Seed</label>
+          <div class="ws-pick">
+            <input id="ws-seed" name="seed" type="text" value="1" maxlength="24">
+            <button class="btn ghost" type="button" id="ws-reseed" title="New random seed" aria-label="New random seed">↻</button>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <span class="label">Directions</span>
+        <div class="ws-dirs">
+          <label class="check"><input type="checkbox" name="horizontal" checked> Across →</label>
+          <label class="check"><input type="checkbox" name="vertical" checked> Down ↓</label>
+          <label class="check"><input type="checkbox" name="diagonal" checked> Diagonal ↘ ↗</label>
+          <label class="check"><input type="checkbox" name="backwards"> Backwards ← ↑ ↖</label>
+        </div>
+        <div class="hint">For young children use across and down only. Backwards words make a puzzle much harder.</div>
+      </div>
+      <div class="field">
+        <span class="label">Letters</span>
+        <div class="seg" role="radiogroup" aria-label="Letter case">
+          <label><input type="radio" name="case" value="upper" checked>UPPERCASE</label>
+          <label><input type="radio" name="case" value="lower">lowercase</label>
+        </div>
+      </div>
+      <div class="field">
+        <span class="label">Filler letters</span>
+        <div class="seg" role="radiogroup" aria-label="Filler letters">
+          <label><input type="radio" name="filler" value="all" checked>Whole alphabet</label>
+          <label><input type="radio" name="filler" value="words">Only letters from the words</label>
+        </div>
+        <div class="hint">Using only the words' letters makes the grid harder, because stray Q, X and Z no longer stand out.</div>
+      </div>
+      <label class="check"><input type="checkbox" name="large" id="ws-large"> Large print (bigger letters and word list)</label>
+    </div>
+
+    <div class="ws-sec">
+      <h2>PDF</h2>
+      <div class="field">
+        <span class="label">Output</span>
+        <div class="seg" role="radiogroup" aria-label="Output type">
+          <label><input type="radio" name="mode" value="print" checked>Printable pages</label>
+          <label><input type="radio" name="mode" value="kdp">KDP book interior</label>
+        </div>
+      </div>
+      <div class="field" id="ws-paper-row">
+        <span class="label">Paper</span>
+        <div class="seg" role="radiogroup" aria-label="Paper size">
+          <label><input type="radio" name="paper" value="letter" checked>US Letter</label>
+          <label><input type="radio" name="paper" value="a4">A4</label>
+        </div>
+      </div>
+      <div id="ws-kdp-rows" hidden>
+        <div class="field">
+          <label for="ws-trim">Trim size</label>
+          <select id="ws-trim" name="trim"></select>
+        </div>
+        <label class="check"><input type="checkbox" name="bleed" id="ws-bleed"> Bleed (only if you'll add artwork that runs off the page edge)</label>
+      </div>
+      <label class="check"><input type="checkbox" name="titlePage" id="ws-titlepage"> Title page</label>
+      <div id="ws-title-rows" hidden>
+        <div class="field">
+          <label for="ws-btitle">Book title</label>
+          <input id="ws-btitle" name="btitle" type="text" maxlength="120" value="Word Search Puzzles">
+        </div>
+        <div class="field">
+          <label for="ws-bsub">Subtitle (optional)</label>
+          <input id="ws-bsub" name="bsub" type="text" maxlength="160" placeholder="50 themed puzzles with solutions">
+        </div>
+      </div>
+      <label class="check"><input type="checkbox" name="howto" checked> "How to play" page</label>
+      <label class="check"><input type="checkbox" name="numbers" checked> Page numbers</label>
+      <label class="check"><input type="checkbox" name="answers" id="ws-answers" checked> Answer key at the back</label>
+      <div class="field" id="ws-density-row" style="margin-top:8px">
+        <label for="ws-density">Solutions per page</label>
+        <select id="ws-density" name="density">
+          <option value="1">1 (full size)</option>
+          <option value="2" selected>2</option>
+          <option value="4">4 (Pro)</option>
+          <option value="6">6 (Pro)</option>
+        </select>
+      </div>
+    </div>
+  </form>
+
+  <div class="preview">
+    <div class="panel">
+      <div class="ws-preview-bar">
+        <div class="ws-nav">
+          <button class="btn ghost" type="button" id="ws-prev" aria-label="Previous puzzle">‹</button>
+          <span id="ws-pos" class="small muted" aria-live="polite"></span>
+          <button class="btn ghost" type="button" id="ws-next" aria-label="Next puzzle">›</button>
+        </div>
+        <label class="check" style="margin:0"><input type="checkbox" id="ws-show"> Show solution</label>
+      </div>
+      <div class="canvas-box plain" id="ws-preview" aria-live="polite"></div>
+      <div id="ws-msg"></div>
+      <div class="result-grid" id="ws-stats" style="margin-top:12px"></div>
+      <div class="btn-row">
+        <button class="btn" type="button" id="ws-pdf">Download PDF</button>
+        <button class="btn secondary" type="button" id="ws-pdf-free" hidden>Download the first 5 free</button>
+      </div>
+      <div class="ws-progress" id="ws-progress" hidden>
+        <div class="progress" role="progressbar" aria-label="PDF progress" aria-valuemin="0" aria-valuemax="100"><div></div></div>
+        <p class="small muted" id="ws-progress-text"></p>
+      </div>
+      <div id="ws-export-msg" aria-live="polite"></div>
+      <div class="pro-box hide-if-pro">
+        <p><strong>Free:</strong> PDFs of up to 5 puzzles with answer keys, on any page size, as printable pages or a KDP interior.</p>
+        <p><strong>Pro</strong> makes whole books: up to 300 puzzles in one PDF, with 4 or 6 solutions per page so the answer key stays short.</p>
+        <button class="btn pro" type="button" data-pro-open="Word search books of up to 300 puzzles, with compact 4 or 6 per page answer keys.">See Pro</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+  <h2>How to use the word search maker</h2>
+  <ol>
+    <li><strong>Add your words.</strong> Type a title and a word list, or pick a ready-made theme. To build a whole book quickly, add all the themes, or paste many lists at once with a blank line between them.</li>
+    <li><strong>Set the grid.</strong> 10 × 10 to 13 × 13 with across and down words suits early readers. 15 × 15 with diagonals is a classic adult puzzle. 20 × 20 and up, with backwards words and filler drawn only from the words' own letters, is hard.</li>
+    <li><strong>Check the preview.</strong> Flip through the puzzles with the arrows and tick <em>Show solution</em> to see where every word went. If a word doesn't fit, the tool says so and suggests the smallest grid that holds them all.</li>
+    <li><strong>Download the PDF.</strong> Choose printable pages for a classroom or home printer, or a KDP book interior to publish as a paperback.</li>
+  </ol>
+  <p>The <strong>seed</strong> makes results repeatable. The same words, settings and seed always give the same grid, so you can rebuild a book later and get identical puzzles. Change the seed (or press ↻) for a fresh layout.</p>
+
+  <h2>What the generator does for you</h2>
+  <ul>
+    <li><strong>Every word is placed</strong>, or you're told which ones aren't. It places the longest words first and backs up to try other spots when a word won't fit, so a tight grid still works.</li>
+    <li><strong>No accidental doubles.</strong> Random filler can spell a list word a second time, which leaves solvers confused about which one counts. The tool checks every word in all eight directions and replaces filler letters until each word appears exactly once. The one exception is a word hidden inside another word (CAT inside CATERPILLAR), which the tool points out so you can change it.</li>
+    <li><strong>No rude surprises.</strong> Filler letters are re-rolled if they happen to spell a short list of offensive words, which matters for classroom printouts.</li>
+  </ul>
+
+  <h2>Making a word search book for Amazon KDP</h2>
+  <p><strong>Is it a low-content book?</strong> Probably not. KDP's own help page lists notebooks, journals, planners and log books as low-content, and names puzzle books among the examples that are generally <em>not</em> low-content. In practice that means you publish a puzzle book as a normal paperback: you can use a free KDP ISBN, Expanded Distribution is available, and you don't tick the low-content box. Check KDP's current low-content page before you publish, because the rules can change.</p>
+  <p><strong>Choosing a trim size.</strong> 8.5 × 11 in gives the biggest grids and suits large-print and children's books. 6 × 9 in is cheaper to print and easy to carry. Below about 9 pt the grid letters get hard to read for many adults, so the tool shows the letter size it will print at. Keep large-print books to grids of 15 × 15 or smaller on 6 × 9.</p>
+  <p><strong>Margins and bleed.</strong> KDP needs a wider inside margin as the page count grows (0.375 in up to 150 pages, 0.5 in up to 300 pages). The tool uses the page count of the finished PDF to pick the right gutter and adds a little extra on every side. Puzzle pages don't print to the edge, so leave bleed off unless you plan to add edge-to-edge artwork. If you do switch it on, set bleed to "yes" when you upload too, since KDP checks that the page size matches.</p>
+  <p><strong>Page count.</strong> A KDP paperback needs at least 24 pages and an even page count, so the tool adds blank pages at the end when needed. A book padded with lots of empty pages is a poor read, so add more puzzles rather than relying on padding.</p>
+  <p><strong>Why the answer key matters.</strong> Solvers get stuck, and a puzzle book without solutions draws complaints. The answer key circles each word with a rounded outline and greys out the filler letters, so the answers are easy to see even when grids are printed small.</p>
+  <p><strong>What KDP checks.</strong> When you upload the interior, KDP's previewer checks the page size against the trim and bleed you chose, that all fonts are embedded, and that nothing sits outside the margins. This tool embeds its fonts and keeps every page inside the live area. You'll make the cover separately: its width depends on your final page count and paper type.</p>
+</section>

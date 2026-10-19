@@ -1,0 +1,30 @@
+{
+  "slug": "image-dpi-checker",
+  "category": "pod",
+  "order": 1,
+  "title": "Image DPI Checker & Print Size Calculator (Change DPI to 300)",
+  "h1": "Image DPI checker and print size calculator",
+  "description": "Check an image's DPI and pixel size, see how big it prints at 300 DPI, and save a copy set to 300 DPI without losing any quality. Free, runs in your browser.",
+  "intro": "Drop a PNG, JPEG, WebP or TIFF to see its pixel size, the DPI stored in the file and the largest size it prints well at. Then save a copy labelled 300 DPI (or any value) without re-saving the image, so the quality stays exactly the same.",
+  "card": "See an image's real print size and set it to 300 DPI with no quality loss.",
+  "free": "Check one image at a time and save a copy at any DPI",
+  "pro": "Drop many images at once and download every DPI-fixed copy in one zip with a CSV report",
+  "proFeature": true,
+  "scripts": ["assets/image.js"],
+  "related": ["pod-image-resizer", "transparent-png-trimmer"],
+  "lastReviewed": "2026-10-19",
+  "sources": [
+    {"name": "Redbubble: Dimensions & Format", "url": "https://help.redbubble.com/hc/en-us/articles/202270679-Dimensions-Format"},
+    {"name": "Printful: preparing print files", "url": "https://help.printful.com/hc/en-us/articles/28491464259740-How-should-I-prepare-my-print-file-for-the-best-results"},
+    {"name": "Zazzle: creating and uploading images", "url": "https://www.zazzle.ca/hc/article/creating_and_uploading_images_to_zazzle-219861927"}
+  ],
+  "faq": [
+    {"q": "Does changing the DPI to 300 make my image better quality?", "a": "No. The DPI number is only a label that tells design apps how big to show the image. The pixels are what get printed. A 1200 × 1800 pixel image prints sharply at 4 × 6 in whether the file says 72 or 300 DPI. Changing the label only changes the size an app opens it at, which is why this tool can change it without touching a single pixel."},
+    {"q": "Why does my image say 72 DPI?", "a": "72 (or 96) is the default label that phones, screenshots, web exports and many apps write when nobody chose a print size. It says nothing about quality. Look at the pixel size instead: divide the pixels by 300 to get the size in inches it prints sharply at."},
+    {"q": "What DPI do I need for printing?", "a": "300 pixels per inch for things people hold close, like photos, cards and book covers. Posters and wall art seen from a few feet away look fine at 150 to 200. Print-on-demand apparel printers often accept 150 as a minimum; Printful, for example, asks for 150 to 300 depending on the product."},
+    {"q": "Is DPI the same as PPI?", "a": "Strictly, PPI (pixels per inch) describes an image file and DPI (dots per inch) describes how a printer lays down ink. In everyday use, and in the setting stored in image files, people say DPI for both. When a print shop asks for a 300 DPI file, it means 300 pixels for every inch of the printed size."},
+    {"q": "Will saving at a new DPI reduce quality or change the file size?", "a": "No. The tool edits only the few bytes that hold the resolution (the pHYs chunk in a PNG, the JFIF and EXIF headers in a JPEG, the resolution tags in a TIFF). The compressed image data is copied byte for byte, and the tool checks that afterwards. The file grows by at most about 20 bytes."},
+    {"q": "Do print-on-demand sites check the DPI number?", "a": "It varies. Redbubble says DPI does not matter and only checks pixel dimensions. Other services list 300 DPI in their file requirements, and some design apps size placed images by the DPI label. Setting the label to 300 costs nothing, but it never replaces having enough pixels."},
+    {"q": "Are my images uploaded anywhere?", "a": "No. The file is read and rewritten by JavaScript in your browser. Nothing is sent to a server, so it also works offline once the page has loaded."}
+  ]
+}

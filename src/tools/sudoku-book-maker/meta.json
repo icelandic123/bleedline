@@ -1,0 +1,28 @@
+{
+  "slug": "sudoku-book-maker",
+  "category": "kdp",
+  "order": 5,
+  "title": "Sudoku Puzzle Book Maker: Printable Sudoku PDF Generator",
+  "h1": "Sudoku puzzle book maker",
+  "description": "Generate printable sudoku with one unique solution, graded easy to expert by solving technique. Export PDF pages or a KDP book interior with answers.",
+  "intro": "Make sudoku puzzles that each have exactly one solution, graded by the techniques a solver needs. Print a few on Letter or A4, or export a complete book interior for Amazon KDP with a title page, sections, page numbers and solutions.",
+  "card": "Graded sudoku with unique solutions, as printable pages or a KDP book.",
+  "free": "PDFs of up to 6 puzzles at any difficulty, with solutions",
+  "pro": "Books of up to 500 puzzles, easy-to-expert sections",
+  "proFeature": true,
+  "related": ["word-search-maker", "isbn-barcode-generator"],
+  "scripts": ["assets/kdp.js", "sudoku-book-maker/book.js", "sudoku-book-maker/sudoku-core.js"],
+  "lastReviewed": "2026-10-19",
+  "sources": [
+    {"name": "KDP: Set trim size, bleed, and margins", "url": "https://kdp.amazon.com/en_US/help/topic/GVBQ3CMEQW3W2VL6"},
+    {"name": "KDP: Low-content books", "url": "https://kdp.amazon.com/en_US/help/topic/GGE5T76TWKA85DJM"}
+  ],
+  "faq": [
+    {"q": "Does every sudoku have exactly one solution?", "a": "Yes. Each puzzle is checked by a solver that counts solutions and stops at two. Any puzzle with more than one answer is thrown away, and the tool's own tests re-check every puzzle with a second, independent solver."},
+    {"q": "How is the difficulty decided?", "a": "By the hardest technique a solver needs and by the number of givens. Easy puzzles need only naked and hidden singles. Medium needs pairs or pointing, Hard needs triples, X-Wing or XY-Wing, and Expert needs techniques such as Swordfish or XY-Chains. No puzzle needs guessing. The table under the tool lists the rules."},
+    {"q": "Can I sell books made with these puzzles?", "a": "Yes. The puzzles are generated for you and are yours to print and sell, including on Amazon KDP. Give the book your own title, cover and selection of difficulty levels."},
+    {"q": "Why do I get the same puzzles every time?", "a": "Puzzles come from the seed, so the same seed and settings always give the same book. That lets you rebuild a book later. Press ↻ or type a new seed for different puzzles."},
+    {"q": "How many puzzles per page should I use?", "a": "One per page for large print, two per page for most books on 6 × 9 or 8.5 × 11 in, and four or six per page for compact books and worksheets. The tool shows the printed cell size so you can check the grids aren't too small to write in."},
+    {"q": "Is a sudoku book a low-content book on KDP?", "a": "Generally not. KDP's help lists puzzle books among the examples that usually aren't low-content, so you publish it as a regular paperback and can use a free KDP ISBN. Read KDP's current low-content page before publishing."}
+  ]
+}

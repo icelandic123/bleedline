@@ -1,0 +1,27 @@
+<nav class="crumbs" aria-label="Breadcrumb"><a href="{{root}}">{{siteName}}</a> › Pro</nav>
+<h1>Bleedline Pro</h1>
+<p class="lead">Every tool on Bleedline is free to use. Pro is for people who make books and listings in volume: it removes the limits, adds batch exports and pays for new tools.</p>
+<div class="show-if-pro note ok">Pro is unlocked in this browser. Thank you. <button class="btn ghost" type="button" id="pro-off" style="margin-left:8px">Remove key from this browser</button></div>
+<div class="price-card hide-if-pro">
+  <p class="badge pro">Lifetime</p>
+  <p class="price">{{price}} <span class="small muted" style="font-weight:400">one time</span></p>
+  <p>No subscription. Use it on your own devices for as long as Bleedline runs, including every Pro tool added later.</p>
+  <div class="btn-row"><a class="btn pro" href="{{buyUrl}}" target="_blank" rel="noopener" id="buy-pro">Get Pro</a><button class="btn ghost" type="button" data-pro-open="">I have a license key</button></div>
+  <p class="small muted">Checkout is handled by Gumroad. Your license key arrives by email straight away. If Pro doesn't work for you, ask for a refund within 30 days.</p>
+</div>
+<h2>Free and Pro, tool by tool</h2>
+<div class="table-wrap"><table class="compare"><thead><tr><th>Tool</th><th>Free</th><th>Pro</th></tr></thead><tbody>{{compareRows}}</tbody></table></div>
+<h2>How the license works</h2>
+<div class="content">
+<p>After checkout, Gumroad emails you a license key. Open any Bleedline tool, click a Pro feature, paste the key and press Unlock. The key is stored in this browser only, so enter it once on each device you use.</p>
+<p>Bleedline has no accounts and no server. The only thing sent anywhere is your key, which goes to Gumroad to confirm the purchase.</p>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var off = document.getElementById('pro-off');
+  if (off) off.addEventListener('click', function () { BL.pro.deactivate(); BL.toast('The key was removed from this browser.'); });
+  var buy = document.getElementById('buy-pro');
+  if (buy && buy.getAttribute('href') === '#') { buy.removeAttribute('href'); buy.classList.add('ghost'); buy.classList.remove('pro'); buy.textContent = 'Opening for sale soon'; }
+  if (buy) buy.addEventListener('click', function () { BL.track('buy-click', 'pro-page'); });
+});
+</script>

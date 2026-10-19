@@ -1,0 +1,31 @@
+{
+  "slug": "kdp-cover-calculator",
+  "category": "kdp",
+  "order": 1,
+  "title": "KDP Cover Calculator: Spine Width & Cover Size (Free Template)",
+  "h1": "KDP cover calculator",
+  "description": "Work out your KDP paperback spine width and full cover size with bleed, then download a free PNG or PDF cover template with trim, spine and barcode guides.",
+  "intro": "Enter your trim size, page count and paper to get the exact spine width, full cover size with bleed and pixel size for an Amazon KDP paperback. Then download a print-size cover template (PNG at 300 DPI or PDF) marking the bleed, trim, spine folds, safe area and barcode box.",
+  "card": "Spine width, full cover size and a free cover template (PNG and PDF).",
+  "free": "Everything",
+  "related": ["kdp-royalty-calculator", "isbn-barcode-generator"],
+  "scripts": ["assets/kdp.js", "kdp-cover-calculator/calc.js"],
+  "lastReviewed": "2026-10-19",
+  "sources": [
+    {"name": "KDP: create a paperback cover", "url": "https://kdp.amazon.com/en_US/help/topic/G201953020"},
+    {"name": "KDP: paperback cover guidelines", "url": "https://kdp.amazon.com/en_US/help/topic/G201834560"},
+    {"name": "KDP: trim size, bleed and margins", "url": "https://kdp.amazon.com/en_US/help/topic/GVBQ3CMEQW3W2VL6"},
+    {"name": "KDP: barcode guidelines", "url": "https://kdp.amazon.com/en_US/help/topic/G5HDYGP4BXLX4RUW"},
+    {"name": "KDP: create a hardcover cover", "url": "https://kdp.amazon.com/en_US/help/topic/GDTKFJPNQCBTMRV6"},
+    {"name": "KDP cover calculator", "url": "https://kdp.amazon.com/cover-calculator"}
+  ],
+  "faq": [
+    {"q": "How do I calculate the spine width for a KDP paperback?", "a": "Multiply the page count by the thickness KDP uses for your paper: 0.002252 in per page for black and white on white paper (also standard color), 0.0025 in for cream, 0.00235 in for groundwood and 0.002347 in for premium color. A 200-page book on white paper has a 200 × 0.002252 = 0.4504 in spine."},
+    {"q": "What size should my KDP paperback cover PDF be?", "a": "Width = 2 × trim width + spine width + 0.25 in, and height = trim height + 0.25 in. The extra 0.25 in is 0.125 in of bleed on each edge. A 6 × 9 in book with 200 white pages needs a 12.7004 × 9.25 in PDF, which is 3810 × 2775 px at 300 DPI."},
+    {"q": "How many pages do I need to put text on the spine?", "a": "KDP allows spine text only on books with more than 79 pages (Cover Creator asks for 80). Even then, keep the text at least 0.0625 in (1.6 mm) away from each spine fold, because the fold can shift that much."},
+    {"q": "Does a KDP cover need bleed?", "a": "Yes. Paperback covers need 0.125 in (3.2 mm) of bleed on all four sides, and the bottom bleed shouldn't be more than that. Extend your background into the bleed and keep text at least 0.125 in inside the trim line."},
+    {"q": "What resolution should my cover be?", "a": "At least 300 DPI at its printed size. KDP recommends no more than 600 DPI, a minimum font size of 7 pt, and a cover file under 650 MB. The calculator shows the pixel size you need at 300 and 600 DPI."},
+    {"q": "Where does the barcode go on a KDP cover?", "a": "KDP prints a barcode in a 2 × 1.2 in white box at the lower right of the back cover, at least 0.25 in from the spine and the trim. The template marks that box. Keep text and important art out of it, or supply your own barcode in the same place."},
+    {"q": "Can I use this for a hardcover?", "a": "Not for the exact size. KDP publishes the hardcover wrap (0.51 in), hinge (0.4 in) and safe area (0.635 in), but the hardcover spine width and full cover size only come from KDP's own cover calculator. Choose Hardcover above to see the published numbers and a link to KDP's template."}
+  ]
+}

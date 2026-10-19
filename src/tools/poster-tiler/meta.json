@@ -1,0 +1,23 @@
+{
+  "slug": "poster-tiler",
+  "category": "pod",
+  "order": 5,
+  "title": "Print a Large Poster on Multiple Pages (Free Poster Tiler)",
+  "h1": "Poster tiler: print a big poster on many pages",
+  "description": "Split any image into a large poster you print at home on Letter or A4 pages. Overlap for gluing, cut marks and a DPI check. Free, private, runs in your browser.",
+  "intro": "Turn a photo or artwork into a wall-sized poster printed on ordinary paper. Choose the paper and the final size, and you get one PDF with a tile per page, an overlap strip for gluing and cut marks. Your image never leaves your device.",
+  "card": "Split an image into a big poster printed on Letter or A4 pages.",
+  "free": "Up to 3 × 3 pages (9 sheets) with overlap, cut marks and page labels",
+  "pro": "Up to 15 × 15 pages (225 sheets) and an assembly map page",
+  "proFeature": true,
+  "related": ["etsy-fee-calculator"],
+  "faq": [
+    {"q": "How do I print a large poster on multiple pages?", "a": "Drop your image in, pick your paper and how wide you want the poster, and download the PDF. Print it at 100% (\"Actual size\" in the print dialog, not \"Fit to page\"), trim the left and top margins off each sheet except along the poster's outer edges, then line the sheets up on the overlap marks and glue or tape them."},
+    {"q": "What resolution do I need for a tiled poster?", "a": "Less than you might think. Big posters are seen from a distance, and at about 1 metre (3 ft) people with normal eyesight can't see detail finer than about 90 DPI. Aim for 150 DPI or more if people will look closely, and treat 100 DPI as a sensible minimum; below that you may see soft edges or blocky pixels up close."},
+    {"q": "Why must I print at actual size?", "a": "\"Fit to page\" or \"Shrink oversized pages\" scales each sheet by a few percent, so the tiles no longer line up and the overlap marks move. Choose 100%, \"Actual size\" or \"No scaling\" in your print dialog, and print one test page first to check the margins aren't clipped."},
+    {"q": "What is the overlap for?", "a": "Each sheet repeats a thin strip of the next one, so you can lay one sheet over its neighbour and glue the strip without a white gap if your cut is slightly off. 0.25 in (6 mm) is plenty for a glue stick; use 0 if you prefer to cut exactly and butt the sheets together."},
+    {"q": "What printer margin should I use?", "a": "Most home printers can't print right to the edge of the paper. 0.25 in (6 mm) suits nearly all of them. If your printer supports borderless printing you can lower it, which gives each sheet more image and needs fewer sheets."},
+    {"q": "Is my image uploaded anywhere?", "a": "No. The PDF is made in your browser, so your image is never sent to a server. That also means very large jobs depend on your device's memory; the tool processes one sheet at a time to keep things smooth."},
+    {"q": "What does Pro add?", "a": "Free posters can be up to 3 × 3 sheets, which is up to about 58 × 84 cm on A4 or 23.5 × 31 in on Letter (with the default margin and overlap). Pro goes up to 15 × 15 sheets and adds a row-and-column label on every sheet plus an assembly map page showing where each one goes."}
+  ]
+}

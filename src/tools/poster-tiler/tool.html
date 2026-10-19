@@ -1,0 +1,146 @@
+<style>
+  .pt-unit { display: flex; align-items: center; gap: 6px; }
+  .pt-unit input { flex: 1; min-width: 0; }
+  .pt-unit span { color: var(--muted); font-size: .9rem; white-space: nowrap; min-width: 2ch; }
+  .pt-file { font-size: .85rem; color: var(--muted); margin: 8px 0 0; overflow-wrap: anywhere; }
+  #pt-canvas { width: 100%; height: auto; max-height: 70vh; object-fit: contain; }
+  .pt-empty { color: var(--muted); text-align: center; padding: 30px 10px; font-size: .95rem; }
+  .pt-dist { width: auto; }
+  .pt-dist td:first-child { white-space: nowrap; }
+  .pt-sample { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); text-decoration: underline; cursor: pointer; }
+  .pt-progress-text { font-size: .85rem; color: var(--muted); }
+</style>
+
+<div class="tool">
+  <form class="panel" id="pt-form" autocomplete="off" onsubmit="return false">
+    <div class="drop" id="pt-drop" tabindex="0" role="button" aria-label="Choose an image for your poster">
+      <input type="file" accept="image/*" id="pt-file" aria-label="Image file">
+      <strong>Drop your image here</strong>
+      <span class="muted small">or click to choose a JPG, PNG or WebP. You can also paste one.</span>
+    </div>
+    <p class="pt-file" id="pt-file-info">No image yet. <button type="button" class="pt-sample" id="pt-sample">Try a sample image</button></p>
+
+    <div class="field" style="margin-top:14px">
+      <span class="label" id="units-label">Units</span>
+      <div class="seg" role="radiogroup" aria-labelledby="units-label">
+        <label><input type="radio" name="units" value="in" checked>Inches</label>
+        <label><input type="radio" name="units" value="mm">cm / mm</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="paper">Paper</label>
+        <select id="paper" name="paper">
+          <option value="letter">US Letter</option>
+          <option value="a4">A4</option>
+          <option value="legal">US Legal</option>
+          <option value="a3">A3</option>
+          <option value="tabloid">Tabloid</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="orient">Orientation</label>
+        <select id="orient" name="orient">
+          <option value="auto">Auto</option>
+          <option value="portrait">Portrait</option>
+          <option value="landscape">Landscape</option>
+        </select>
+      </div>
+    </div>
+    <p class="small muted" id="paper-hint" style="margin:-8px 0 14px;font-size:.8rem"></p>
+    <div class="field">
+      <span class="label" id="sizeby-label">Set the size by</span>
+      <div class="seg" role="radiogroup" aria-labelledby="sizeby-label">
+        <label><input type="radio" name="sizeBy" value="width" checked>Poster width</label>
+        <label><input type="radio" name="sizeBy" value="pages">Pages across</label>
+      </div>
+    </div>
+    <div class="field" id="width-row">
+      <label for="width">Poster width</label>
+      <div class="pt-unit"><input id="width" name="width" type="number" min="1" step="0.1" value="22" inputmode="decimal"><span class="u-big">in</span></div>
+      <div class="hint">The height follows your image's shape.</div>
+    </div>
+    <div class="field" id="pages-row" hidden>
+      <label for="across">Pages across</label>
+      <input id="across" name="across" type="number" min="1" max="15" step="1" value="3" inputmode="numeric">
+      <div class="hint">The number of pages down follows your image's shape.</div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="margin">Printer margin</label>
+        <div class="pt-unit"><input id="margin" name="margin" type="number" min="0" step="0.01" value="0.25" inputmode="decimal"><span class="u-small">in</span></div>
+        <div class="hint">Unprintable edge.</div>
+      </div>
+      <div class="field">
+        <label for="overlap">Overlap</label>
+        <div class="pt-unit"><input id="overlap" name="overlap" type="number" min="0" step="0.01" value="0.25" inputmode="decimal"><span class="u-small">in</span></div>
+        <div class="hint" id="overlap-hint">Glue strip, 0 to 1 in.</div>
+      </div>
+    </div>
+    <div class="field">
+      <span class="label" id="fit-label">Image on the page grid</span>
+      <div class="seg" role="radiogroup" aria-labelledby="fit-label">
+        <label><input type="radio" name="fit" value="fit" checked>Fit (whole image)</label>
+        <label><input type="radio" name="fit" value="fill">Fill (no blank paper)</label>
+      </div>
+      <div class="hint" id="fit-hint">The whole image is printed at the size you chose. The last row or column may be part blank.</div>
+    </div>
+    <label class="check"><input type="checkbox" name="marks" id="marks" checked> Cut marks and overlap marks</label>
+    <label class="check"><input type="checkbox" name="labels" id="labels"> Page labels (A1, A2…) in the margin</label>
+    <label class="check"><input type="checkbox" name="map" id="map"> Assembly map as the first page <span class="badge pro">Pro</span></label>
+  </form>
+
+  <div class="preview">
+    <div class="panel">
+      <div class="canvas-box plain" id="pt-box">
+        <p class="pt-empty" id="pt-empty">Drop an image to see how it splits across the pages.</p>
+        <canvas id="pt-canvas" hidden aria-label="Preview of the poster with the page grid"></canvas>
+      </div>
+      <div class="result-grid" id="pt-stats" style="margin-top:12px" aria-live="polite"></div>
+      <div id="pt-msg"></div>
+      <div class="pro-box hide-if-pro" id="pt-probox">
+        <p><strong>Free: up to 3 × 3 pages (9 sheets)</strong>, with overlap, cut marks and page labels. <strong>Pro</strong> goes up to 15 × 15 pages and adds an assembly map page.</p>
+        <button class="btn pro" type="button" data-pro-open="Bigger posters (up to 15 × 15 pages) and an assembly map are part of Bleedline Pro.">See Pro</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn" type="button" id="pt-export" disabled>Download PDF</button>
+        <button class="btn ghost" type="button" id="pt-cancel" hidden>Cancel</button>
+      </div>
+      <div id="pt-progress" hidden>
+        <div class="progress"><div id="pt-bar"></div></div>
+        <div class="pt-progress-text" id="pt-progress-text" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+  <h2>How to print and put your poster together</h2>
+  <ol>
+    <li><strong>Print at 100%.</strong> In the print dialog choose "Actual size", "100%" or "No scaling". "Fit to page" shrinks every sheet a little, and then the tiles no longer match. Print one page first and check that nothing is clipped at the edges; if it is, raise the printer margin and download again.</li>
+    <li><strong>Lay the sheets out.</strong> With page labels on, each sheet has its row letter and column number in the bottom margin (A1 is top left, A2 is to its right, B1 is below it), and the assembly map page shows the whole layout.</li>
+    <li><strong>Trim.</strong> On every sheet except the ones in the first column, cut off the left margin along the cut marks. On every sheet except the top row, cut off the top margin. A craft knife and a metal ruler give a straighter edge than scissors.</li>
+    <li><strong>Overlap and glue.</strong> Lay each trimmed sheet over its neighbour so the cut edge sits on the overlap marks of the sheet underneath; the strip in between shows the same part of the image twice, so it hides small errors. Join each row first with a glue stick or tape on the back, then join the rows.</li>
+    <li><strong>Finish the edges.</strong> Trim the outer margins last, or leave them as a white border. With Fit, trim off any blank paper on the last row or column.</li>
+  </ol>
+
+  <h2>How many DPI does a big poster need?</h2>
+  <p>DPI (dots per inch) here means how many of your image's pixels land on each inch of paper. A 6000-pixel-wide photo printed 20 in wide gets 300 DPI; printed 60 in wide it gets 100 DPI. What matters is whether anyone can see the pixels, and that depends on how far away they stand. People with normal eyesight resolve detail down to about one arcminute, which works out to roughly 3,438 ÷ distance in inches:</p>
+  <div class="table-wrap">
+    <table class="pt-dist">
+      <thead><tr><th>Viewing distance</th><th>DPI where pixels stop being visible</th></tr></thead>
+      <tbody>
+        <tr><td>30 cm (1 ft), in your hand</td><td>about 290</td></tr>
+        <tr><td>60 cm (2 ft)</td><td>about 145</td></tr>
+        <tr><td>1 m (3 ft 3 in)</td><td>about 90</td></tr>
+        <tr><td>2 m (6 ft 6 in), across a room</td><td>about 45</td></tr>
+        <tr><td>3 m (10 ft)</td><td>about 30</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>So a wall poster at 100 DPI looks fine from a metre away, and the tool warns you below that. Under 100 DPI it can still look good from across a room, but sharp edges and text will look soft up close. Making the poster smaller, or starting from a bigger image, raises the DPI. Upscaling a small image with an AI upscaler before you tile it can help a lot with photos.</p>
+  <p>The PDF never stores more than 300 DPI per tile, because home printers can't show more and the file would only get bigger. Images with transparency are kept as PNG tiles; everything else uses high-quality JPEG.</p>
+
+  <h2>Fit or fill?</h2>
+  <p><strong>Fit</strong> prints your whole image at exactly the width you asked for. Because paper comes in whole sheets, the last column or row usually has some blank paper that you trim off. <strong>Fill</strong> enlarges the image a little so it covers every sheet completely, cropping an even strip from the edges that stick out. Use Fill when you want no wasted paper and don't mind losing a little of the edges.</p>
+</section>

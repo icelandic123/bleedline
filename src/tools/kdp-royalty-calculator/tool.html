@@ -1,0 +1,268 @@
+<style>
+  .ry-big .v { font-size: 1.7rem; }
+  .ry-neg .v { color: var(--danger); }
+  .ry-chart { position: relative; margin-top: 6px; }
+  .ry-chart svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+  .ry-chart .grid { stroke: var(--border); stroke-width: 1; }
+  .ry-chart .zero { stroke: var(--muted); stroke-width: 1; }
+  .ry-chart .axis { fill: var(--muted); font: 11px var(--font); font-variant-numeric: tabular-nums; }
+  .ry-chart .line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
+  .ry-chart .mark { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 3; }
+  .ry-chart .mark-t { fill: var(--muted); font: 600 11px var(--font); }
+  .ry-chart .you { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+  .ry-chart .cross { stroke: var(--text); stroke-width: 1; opacity: .5; }
+  .ry-chart .dot { fill: var(--surface); stroke: var(--accent); stroke-width: 2; }
+  .ry-tip { position: absolute; top: 0; pointer-events: none; background: var(--surface); color: var(--text); border: 1px solid var(--border); box-shadow: var(--shadow); border-radius: 8px; padding: 6px 9px; font-size: .82rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .ry-tip b { display: block; }
+  #ry-table tr.you td { font-weight: 700; }
+  #ry-table tr.jump td { border-top: 2px solid var(--accent); }
+  #ry-table td.num, #ry-table th.num { text-align: right; white-space: nowrap; }
+  #ry-table td.neg { color: var(--danger); }
+  .ry-tag { display: inline-block; font-size: .72rem; font-weight: 600; padding: 1px 6px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); margin-left: 6px; vertical-align: 1px; }
+  .ry-sub { margin: 18px 0 6px; font-size: 1rem; }
+  .ry-foot { font-size: .82rem; color: var(--muted); margin-top: 12px; }
+  .ry-foot p { margin: .35em 0; }
+  .ry-inline { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; }
+  .ry-inline .field { flex: 1 1 140px; margin-bottom: 0; }
+  .ry-formula { font-family: var(--mono); background: var(--surface-2); border-radius: 8px; padding: 10px 12px; overflow-x: auto; font-size: .9rem; }
+</style>
+
+<div class="tool">
+  <form class="panel" id="ry-form" autocomplete="off" onsubmit="return false">
+    <div class="field">
+      <span class="label" id="fmt-l">Format</span>
+      <div class="seg" role="radiogroup" aria-labelledby="fmt-l">
+        <label><input type="radio" name="format" value="paperback" checked>Paperback</label>
+        <label><input type="radio" name="format" value="hardcover">Hardcover</label>
+        <label><input type="radio" name="format" value="ebook">eBook</label>
+      </div>
+    </div>
+
+    <div id="print-fields">
+      <div class="field">
+        <label for="store">Marketplace</label>
+        <select id="store" name="store">
+          <option value="us">Amazon.com (USD)</option>
+          <option value="uk">Amazon.co.uk (GBP)</option>
+          <option value="de">Amazon.de (EUR)</option>
+          <option value="fr">Amazon.fr (EUR)</option>
+          <option value="it">Amazon.it (EUR)</option>
+          <option value="es">Amazon.es (EUR)</option>
+          <option value="nl">Amazon.nl (EUR)</option>
+          <option value="ie">Amazon.ie (EUR)</option>
+          <option value="be">Amazon.com.be (EUR)</option>
+          <option value="ca">Amazon.ca (CAD)</option>
+          <option value="au">Amazon.com.au (AUD)</option>
+          <option value="jp">Amazon.co.jp (JPY)</option>
+          <option value="pl">Amazon.pl (PLN)</option>
+          <option value="se">Amazon.se (SEK)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="paper">Ink and paper</label>
+        <select id="paper" name="paper">
+          <option value="white">Black &amp; white, white paper</option>
+          <option value="cream">Black &amp; white, cream paper</option>
+          <option value="groundwood">Black &amp; white, groundwood paper</option>
+          <option value="stdcolor">Standard color</option>
+          <option value="premcolor">Premium color</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="trim">Trim size</label>
+        <select id="trim" name="trim"></select>
+        <div class="hint" id="trim-hint"></div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="pages">Page count</label>
+          <input id="pages" name="pages" type="number" inputmode="numeric" min="24" max="828" step="2" value="200">
+        </div>
+        <div class="field">
+          <label for="price" id="price-l">List price</label>
+          <input id="price" name="price" type="number" inputmode="decimal" min="0" step="0.01" value="12.99">
+        </div>
+      </div>
+      <label class="check" id="lowcontent-row"><input type="checkbox" name="lowcontent" id="lowcontent"> Low-content book (journal, notebook, planner)</label>
+    </div>
+
+    <div id="ebook-fields" hidden>
+      <div class="field">
+        <label for="estore">Marketplace</label>
+        <select id="estore" name="estore">
+          <option value="us">Amazon.com (USD)</option>
+          <option value="uk">Amazon.co.uk (GBP)</option>
+          <option value="de">Amazon.de (EUR)</option>
+          <option value="fr">Amazon.fr (EUR)</option>
+          <option value="es">Amazon.es (EUR)</option>
+          <option value="it">Amazon.it (EUR)</option>
+          <option value="nl">Amazon.nl (EUR)</option>
+          <option value="ca">Amazon.ca (CAD)</option>
+          <option value="au">Amazon.com.au (AUD)</option>
+          <option value="jp">Amazon.co.jp (JPY)</option>
+          <option value="in">Amazon.in (INR)</option>
+          <option value="br">Amazon.com.br (BRL)</option>
+          <option value="mx">Amazon.com.mx (MXN)</option>
+        </select>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="eprice" id="eprice-l">List price</label>
+          <input id="eprice" name="eprice" type="number" inputmode="decimal" min="0" step="0.01" value="4.99">
+        </div>
+        <div class="field">
+          <label for="mb">File size (MB)</label>
+          <input id="mb" name="mb" type="number" inputmode="decimal" min="0.01" step="0.1" value="2">
+        </div>
+      </div>
+      <div class="field">
+        <span class="label" id="eopt-l">Royalty option</span>
+        <div class="seg" role="radiogroup" aria-labelledby="eopt-l">
+          <label><input type="radio" name="eopt" value="70" checked>70%</label>
+          <label><input type="radio" name="eopt" value="35">35%</label>
+        </div>
+      </div>
+      <div id="vat-block">
+        <label class="check"><input type="checkbox" name="vatinc" id="vatinc" checked> My list price includes VAT</label>
+        <div class="field">
+          <label for="vatrate">VAT rate for e-books in this store (%)</label>
+          <input id="vatrate" name="vatrate" type="number" inputmode="decimal" min="0" max="30" step="0.1" placeholder="e.g. your country's e-book rate">
+          <div class="hint">KDP takes VAT off the price before working out the royalty. Rates differ by country and change, so enter the one that applies.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="pbprice">Your paperback's list price (optional)</label>
+        <input id="pbprice" name="pbprice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="checks the 70% price rule">
+      </div>
+    </div>
+
+    <h3 class="ry-sub">Plan your earnings</h3>
+    <div class="row">
+      <div class="field">
+        <label for="target" id="target-l">Royalty you want per copy</label>
+        <input id="target" name="target" type="number" inputmode="decimal" min="0" step="0.01" value="3">
+      </div>
+      <div class="field">
+        <label for="copies">Copies sold per month</label>
+        <input id="copies" name="copies" type="number" inputmode="numeric" min="0" step="1" value="50">
+      </div>
+    </div>
+    <div class="field" id="edcopies-row">
+      <label for="edcopies">Expanded Distribution copies per month</label>
+      <input id="edcopies" name="edcopies" type="number" inputmode="numeric" min="0" step="1" value="0">
+    </div>
+  </form>
+
+  <div class="preview">
+    <div class="panel" aria-live="polite">
+      <div class="result-grid" id="ry-stats"></div>
+      <div id="ry-msg"></div>
+    </div>
+    <div class="panel">
+      <h2>Price for a target royalty</h2>
+      <div id="ry-target"></div>
+      <h2 style="margin-top:16px">Monthly and yearly earnings</h2>
+      <div class="result-grid" id="ry-proj"></div>
+    </div>
+  </div>
+</div>
+
+<section class="panel" style="margin-top:16px">
+  <h2 id="ry-chart-h">Royalty at different list prices</h2>
+  <p class="small muted" id="ry-chart-lead"></p>
+  <div class="ry-chart" id="ry-chart"></div>
+  <div class="table-wrap" style="margin-top:12px"><table id="ry-table"></table></div>
+  <div class="ry-foot" id="ry-foot"></div>
+</section>
+
+<section class="content">
+  <h2>How KDP paperback and hardcover royalties work</h2>
+  <p>For a printed book, Amazon keeps a share of the list price, then the printing cost comes out of your share:</p>
+  <p class="ry-formula">royalty = royalty rate × list price − printing cost</p>
+  <p>The royalty rate is <strong>60%</strong> when your list price is at or above the marketplace's threshold, and <strong>50%</strong> below it. In the US the threshold is $9.99. KDP's own worked example, for a book that costs $4.60 to print:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>List price</th><th>Rate</th><th>Royalty</th></tr></thead>
+    <tbody>
+      <tr><td>$9.99</td><td>60%</td><td>0.60 × 9.99 − 4.60 = <strong>$1.39</strong></td></tr>
+      <tr><td>$9.98</td><td>50%</td><td>0.50 × 9.98 − 4.60 = <strong>$0.39</strong></td></tr>
+    </tbody>
+  </table></div>
+  <p>One cent off the price costs a whole dollar of royalty per copy. If your price is anywhere just under a threshold, raising it to the threshold usually earns more even if you sell a few fewer copies. The chart above shows the jump for your book.</p>
+
+  <h3>Royalty rate thresholds by marketplace</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Marketplace</th><th>50% royalty up to</th><th>60% royalty from</th><th>Highest list price</th></tr></thead>
+    <tbody>
+      <tr><td>Amazon.com</td><td>9.98 USD</td><td>9.99 USD</td><td>250 USD</td></tr>
+      <tr><td>Amazon.de, .fr, .it, .es, .nl, .ie, .com.be</td><td>9.98 EUR</td><td>9.99 EUR</td><td>250 EUR</td></tr>
+      <tr><td>Amazon.co.uk</td><td>7.98 GBP</td><td>7.99 GBP</td><td>250 GBP</td></tr>
+      <tr><td>Amazon.ca</td><td>13.98 CAD</td><td>13.99 CAD</td><td>350 CAD</td></tr>
+      <tr><td>Amazon.com.au</td><td>13.98 AUD</td><td>13.99 AUD</td><td>350 AUD</td></tr>
+      <tr><td>Amazon.co.jp</td><td>999 JPY</td><td>1,000 JPY</td><td>30,000 JPY</td></tr>
+      <tr><td>Amazon.pl</td><td>39 PLN</td><td>40 PLN</td><td>1,200 PLN</td></tr>
+      <tr><td>Amazon.se</td><td>109 SEK</td><td>110 SEK</td><td>2,500 SEK</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>How the printing cost is worked out</h3>
+  <p>Printing cost is a fixed charge per book plus a charge per page. Short black-and-white books (up to 110 pages in the US) pay one flat price instead. The rates depend on the marketplace, the ink and paper, and whether the trim is <strong>regular</strong> or <strong>large</strong>: KDP counts a trim as large if it is wider than 6.12 in (155.5 mm) or taller than 9 in (228.6 mm). So 6 × 9 in is regular, but 6.14 × 9.21 in and 8.5 × 11 in are large and cost more per page. Amazon.com rates:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Paperback, Amazon.com</th><th>Regular trim</th><th>Large trim</th></tr></thead>
+    <tbody>
+      <tr><td>Black &amp; white, 24–110 pages</td><td>$2.30 flat</td><td>$2.84 flat</td></tr>
+      <tr><td>Black &amp; white, 110–828 pages</td><td>$1.00 + $0.012 per page</td><td>$1.00 + $0.017 per page</td></tr>
+      <tr><td>Groundwood, 24–112 pages</td><td>$2.23 flat</td><td>$2.75 flat</td></tr>
+      <tr><td>Groundwood, 114–828 pages</td><td>$1.00 + $0.0114 per page</td><td>$1.00 + $0.0162 per page</td></tr>
+      <tr><td>Standard color, 72–600 pages</td><td>$1.00 + $0.0255 per page</td><td>$1.00 + $0.0402 per page</td></tr>
+      <tr><td>Premium color, 24–40 pages</td><td>$3.60 flat</td><td>$4.20 flat</td></tr>
+      <tr><td>Premium color, 42–828 pages</td><td>$1.00 + $0.065 per page</td><td>$1.00 + $0.08 per page</td></tr>
+    </tbody>
+  </table></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Hardcover, Amazon.com</th><th>Regular trim</th><th>Large trim</th></tr></thead>
+    <tbody>
+      <tr><td>Black &amp; white, 75–108 pages</td><td>$6.80 flat</td><td>$7.49 flat</td></tr>
+      <tr><td>Black &amp; white, 110–550 pages</td><td>$5.65 + $0.012 per page</td><td>$5.65 + $0.017 per page</td></tr>
+      <tr><td>Premium color, 75–550 pages</td><td>$5.65 + $0.065 per page</td><td>$5.65 + $0.080 per page</td></tr>
+    </tbody>
+  </table></div>
+  <p>Example: a 300-page black-and-white 6 × 9 in paperback costs $1.00 + 300 × $0.012 = <strong>$4.60</strong> to print in the US, and the same book as a hardcover costs $5.65 + 300 × $0.012 = <strong>$9.25</strong>. The calculator holds the rates for every marketplace listed above.</p>
+  <p>The <strong>minimum list price</strong> is the price where your royalty reaches zero: printing cost ÷ royalty rate. KDP won't let you list below it.</p>
+
+  <h3>Expanded Distribution</h3>
+  <p>Expanded Distribution offers your paperback to bookstores, libraries and other retailers. It pays 40% of the list price minus printing, so it needs a higher price to earn anything: a $4.60 book earns nothing there until the list price reaches $11.50. It isn't available for hardcovers or low-content books, and KDP pays it about 90 days after the month of sale.</p>
+
+  <h2>How KDP eBook royalties work</h2>
+  <p>eBooks have two royalty options:</p>
+  <ul>
+    <li><strong>35%:</strong> 35% of the list price without VAT. Works at any price in the allowed range.</li>
+    <li><strong>70%:</strong> 70% of (list price − VAT − delivery cost). Only when your price is inside the 70% band, your eBook is at least 20% cheaper than its print edition on Amazon, and in the territories KDP lists for 70%. In Brazil, Japan, Mexico and India the 70% option also needs KDP Select. Books that are mainly public-domain content get 35% only.</li>
+  </ul>
+  <p><strong>Delivery cost</strong> is charged only on the 70% option: your file size in MB times a per-MB rate (US $0.15 per MB). A 2 MB novel pays $0.30 a copy; a 40 MB picture book pays $6.00, which is why heavy, low-priced eBooks can earn more on 35%. The calculator shows both options so you can compare.</p>
+  <h3>70% price bands</h3>
+  <p>Since <strong>July 7, 2026</strong>, the US 70% band is <strong>$2.99 to $12.99</strong> (it used to stop at $9.99), and KDP says other marketplaces changed in the same way. Prices outside the band only qualify for 35%.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Marketplace</th><th>70% band</th><th>Delivery cost per MB</th></tr></thead>
+    <tbody>
+      <tr><td>Amazon.com</td><td>2.99–12.99 USD</td><td>$0.15</td></tr>
+      <tr><td>Amazon.ca</td><td>2.99–12.99 CAD</td><td>C$0.15</td></tr>
+      <tr><td>Amazon.co.uk</td><td>1.77–12.99 GBP</td><td>£0.10</td></tr>
+      <tr><td>Amazon.de, .fr, .es, .it, .nl</td><td>2.69–12.99 EUR</td><td>€0.12</td></tr>
+      <tr><td>Amazon.com.au</td><td>3.99–15.99 AUD</td><td>A$0.15</td></tr>
+      <tr><td>Amazon.co.jp</td><td>250–1,650 JPY</td><td>¥1 (none at 10 MB or more)</td></tr>
+      <tr><td>Amazon.in</td><td>99–599 INR</td><td>₹7</td></tr>
+      <tr><td>Amazon.com.br</td><td>5.99–31.99 BRL</td><td>R$0.30</td></tr>
+      <tr><td>Amazon.com.mx</td><td>34.99–199.99 MXN</td><td>MX$1</td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>VAT:</strong> in the UK and EU stores the eBook price buyers see includes VAT, and KDP takes the VAT off before applying 35% or 70%. Tick "includes VAT" and enter your store's e-book VAT rate to see the royalty you'll actually get. Print books work the other way: you enter the list price without VAT and Amazon adds the tax on top.</p>
+
+  <h2>Pricing tips</h2>
+  <ul>
+    <li>For print, check the price one step either side of the threshold. $9.99 often earns about $1 more per copy than $9.98.</li>
+    <li>Page count drives the printing cost. Trimming 40 pages from a black-and-white 6 × 9 in book saves $0.48 a copy in the US.</li>
+    <li>For eBooks, keep the price inside the 70% band and at least 20% below your paperback.</li>
+    <li>Compress images in heavy eBooks: every MB costs $0.15 per copy on the 70% option in the US.</li>
+  </ul>
+  <p>Planning the print edition? Get the exact spine width and a cover template from the <a href="{{root}}kdp-cover-calculator/">KDP cover calculator</a>.</p>
+</section>

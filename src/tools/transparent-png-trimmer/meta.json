@@ -1,0 +1,24 @@
+{
+  "slug": "transparent-png-trimmer",
+  "category": "pod",
+  "order": 3,
+  "title": "Trim Transparent PNG & Check Transparent Background",
+  "h1": "Transparent PNG trimmer and checker",
+  "description": "Check a PNG's transparent background for stray specks, halos and semi-transparent edges, preview it on shirt colors, then trim and clean it. Free, in-browser.",
+  "intro": "Drop a PNG to see whether its background is really transparent, find the faint specks and white or dark halos that background removers leave behind, and preview it on white, black, heather grey and navy shirts. Then trim the empty edges and clean it up in one click.",
+  "card": "Find stray specks and halos in transparent PNGs, preview on shirts, trim and clean.",
+  "free": "Check, clean and trim one PNG at a time",
+  "pro": "Clean and trim many PNGs at once, zipped, with a CSV report",
+  "proFeature": true,
+  "scripts": ["assets/image.js"],
+  "related": ["pod-image-resizer", "image-dpi-checker"],
+  "faq": [
+    {"q": "How do I know if my PNG background is really transparent?", "a": "Drop it in the tool. It reads the alpha channel of every pixel and tells you how much of the image is fully transparent, partly transparent and solid. A PNG with no alpha at all, or a fake checkerboard painted into the image, shows up as 0% transparent."},
+    {"q": "What are the faint dots around my design on a printed shirt?", "a": "Usually leftover pixels from removing the background: specks that are almost, but not quite, transparent. They're invisible on screen, but a printer lays down ink (and white underbase on dark shirts) wherever a pixel isn't fully transparent. The tool finds them, marks them on the preview and removes them."},
+    {"q": "Why does my design have a white outline on a black shirt?", "a": "When a design is cut out from a white background, the soft edge pixels keep some of that white mixed in. On a white shirt you can't see it; on a dark shirt it becomes a thin light halo. The fringe cleanup recolors those edge pixels from the artwork next to them, and hardening makes the edge fully solid."},
+    {"q": "Should I harden the edges?", "a": "Only if your printer struggles with soft edges or you can see a fringe. Hardening makes every pixel either solid or fully transparent, which prints cleanly with DTG and screen printing but can look slightly jagged on curves at small sizes. Soft shadows and glows will be removed or made solid, so it isn't for designs that rely on them."},
+    {"q": "Why trim the empty space around a design?", "a": "Print-on-demand services scale and place your file as a whole, empty border included. A design with a wide transparent margin prints smaller and lower than you expect. Trimming to the artwork lets you control the placement, and the padding option keeps a small even gap if a service needs one."},
+    {"q": "Does it keep the DPI and color profile?", "a": "Yes. If the PNG has a DPI (pHYs) setting or a color profile, the cleaned file keeps them. If it has no DPI, you choose: 300, another value, or none. 16-bit PNGs are saved as 8-bit, which is what print services use."},
+    {"q": "Is my file uploaded?", "a": "No. All checks and edits run in your browser and the cleaned PNG is saved straight to your device."}
+  ]
+}

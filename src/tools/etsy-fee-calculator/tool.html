@@ -1,0 +1,244 @@
+<style>
+  .ef-sub { font-size: .95rem; margin: 18px 0 10px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .ef-sub:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+  .ef-rates summary { cursor: pointer; font-weight: 600; font-size: .9rem; margin: 6px 0 10px; }
+  .ef-rates[open] summary { margin-bottom: 12px; }
+  .ef-lines td:last-child, .ef-lines th:last-child { text-align: right; white-space: nowrap; }
+  .ef-lines .f { display: block; font-size: .8rem; color: var(--muted); font-family: var(--mono); overflow-wrap: anywhere; }
+  .ef-lines tr.sum td { font-weight: 700; border-top: 2px solid var(--border); }
+  .ef-lines tr.sec td { background: var(--surface-2); font-weight: 600; font-size: .85rem; text-align: left; }
+  .ef-lines .neg { color: var(--danger); }
+  .ef-lines .pos { color: var(--ok); }
+  .ef-rev { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; }
+  @media (max-width: 420px) { .ef-rev { grid-template-columns: 1fr; } }
+  .ef-input-unit { display: flex; align-items: center; gap: 6px; }
+  .ef-input-unit input { flex: 1; min-width: 0; }
+  .ef-input-unit span { color: var(--muted); font-size: .9rem; white-space: nowrap; }
+  #ef-stats .v.neg { color: var(--danger); }
+  .ef-table td { vertical-align: top; }
+</style>
+
+<div class="tool">
+  <form class="panel" id="ef-form" autocomplete="off" onsubmit="return false">
+    <h2 class="ef-sub">The sale</h2>
+    <div class="field">
+      <span class="label" id="mode-label">What you sell</span>
+      <div class="seg" role="radiogroup" aria-labelledby="mode-label">
+        <label><input type="radio" name="mode" value="own" checked>My own products</label>
+        <label><input type="radio" name="mode" value="pod">Print-on-demand</label>
+      </div>
+    </div>
+    <div class="field">
+      <label for="country">Your bank account is in</label>
+      <select id="country" name="country">
+        <option value="US">United States (USD)</option>
+        <option value="UK">United Kingdom (GBP)</option>
+        <option value="CA">Canada (CAD)</option>
+        <option value="AU">Australia (AUD)</option>
+        <option value="NZ">New Zealand (NZD)</option>
+        <option value="DE">Germany (EUR)</option>
+        <option value="FR">France (EUR)</option>
+        <option value="IT">Italy (EUR)</option>
+        <option value="ES">Spain (EUR)</option>
+        <option value="NL">Netherlands (EUR)</option>
+        <option value="PL">Poland (EUR)</option>
+        <option value="HU">Hungary (EUR)</option>
+        <option value="EU">Other EU country (EUR)</option>
+        <option value="SE">Sweden (SEK)</option>
+        <option value="DK">Denmark (DKK)</option>
+        <option value="NO">Norway (NOK)</option>
+        <option value="CH">Switzerland (CHF)</option>
+        <option value="JP">Japan (JPY)</option>
+        <option value="TH">Thailand (THB)</option>
+        <option value="IN">India (INR)</option>
+        <option value="custom">Another country (enter rates)</option>
+      </select>
+      <div class="hint">Etsy's payment processing fee depends on where your payment account's bank is, not where the buyer is.</div>
+    </div>
+    <div class="field" id="custom-cur-row" hidden>
+      <label for="customCur">Your payment account currency</label>
+      <input id="customCur" name="customCur" type="text" maxlength="3" value="USD" spellcheck="false" style="text-transform:uppercase">
+      <div class="hint">Three-letter code, such as MXN. Then enter your country's rates under "Etsy's rates" below.</div>
+    </div>
+    <div class="field" id="dest-row" hidden>
+      <span class="label" id="dest-label">Where the buyer is</span>
+      <div class="seg" role="radiogroup" aria-labelledby="dest-label">
+        <label><input type="radio" name="dest" value="dom" checked><span id="dest-dom">Same country</span></label>
+        <label><input type="radio" name="dest" value="intl"><span id="dest-intl">Another country</span></label>
+      </div>
+      <div class="hint" id="dest-hint"></div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="price">Item price (<span class="cc">USD</span>)</label>
+        <input id="price" name="price" type="number" min="0" step="0.01" value="25" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="qty">Quantity in order</label>
+        <input id="qty" name="qty" type="number" min="1" step="1" value="1" inputmode="numeric">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="ship">Shipping charged</label>
+        <input id="ship" name="ship" type="number" min="0" step="0.01" value="5" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="wrap">Gift wrap charged</label>
+        <input id="wrap" name="wrap" type="number" min="0" step="0.01" value="0" inputmode="decimal">
+      </div>
+    </div>
+    <div class="field">
+      <label for="tax">Sales tax or VAT collected by Etsy (%)</label>
+      <input id="tax" name="tax" type="number" min="0" max="40" step="0.01" value="0" inputmode="decimal">
+      <div class="hint">The buyer's tax rate, charged on item + shipping + gift wrap. Etsy pays it to the tax office, so it isn't your income, but the payment processing fee is still charged on it. Leave 0 to ignore.</div>
+    </div>
+    <div class="field">
+      <span class="label" id="offsite-label">Did the sale come from an Offsite Ad?</span>
+      <div class="seg" role="radiogroup" aria-labelledby="offsite-label">
+        <label><input type="radio" name="offsite" value="0" checked>No</label>
+        <label><input type="radio" name="offsite" value="15">Yes, 15%</label>
+        <label><input type="radio" name="offsite" value="12">Yes, 12%</label>
+      </div>
+      <div class="hint">15% if your shop made under US$10,000 in the last 365 days (you can opt out), 12% from US$10,000 (mandatory). Capped at US$100 per order.</div>
+    </div>
+    <label class="check"><input type="checkbox" name="conv" id="conv"> My listings are priced in a different currency from my payment account (2.5% conversion fee)</label>
+    <div class="field" id="fx-row" hidden>
+      <label for="fx">Exchange rate: 1 USD =</label>
+      <div class="ef-input-unit"><input id="fx" name="fx" type="number" min="0" step="any" value="1" inputmode="decimal"><span class="cc">USD</span></div>
+      <div class="hint">An estimate, used only to convert Etsy's US-dollar fees (US$0.20 listing fee, US$100 Offsite Ads cap<span id="fx-hint-fixed"></span>). Put in today's rate for an exact figure.</div>
+    </div>
+
+    <h2 class="ef-sub">Your costs</h2>
+    <div class="row">
+      <div class="field">
+        <label for="cost" id="cost-label">Item cost (per item)</label>
+        <input id="cost" name="cost" type="number" min="0" step="0.01" value="8" inputmode="decimal">
+        <div class="hint" id="cost-hint">Materials and labour for one item.</div>
+      </div>
+      <div class="field">
+        <label for="shipCost" id="shipcost-label">Your shipping cost</label>
+        <input id="shipCost" name="shipCost" type="number" min="0" step="0.01" value="4.5" inputmode="decimal">
+        <div class="hint" id="shipcost-hint">Postage label for the whole order.</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field" id="pack-row">
+        <label for="pack">Packaging</label>
+        <input id="pack" name="pack" type="number" min="0" step="0.01" value="0.5" inputmode="decimal">
+        <div class="hint">Per order.</div>
+      </div>
+      <div class="field">
+        <label for="ads">Etsy Ads spend per sale</label>
+        <input id="ads" name="ads" type="number" min="0" step="0.01" value="0" inputmode="decimal">
+        <div class="hint">Your ad budget divided by sales from ads.</div>
+      </div>
+    </div>
+
+    <details class="ef-rates" id="ef-rates">
+      <summary>Etsy's rates (edit if Etsy changes them)</summary>
+      <div class="row">
+        <div class="field">
+          <label for="txPct">Transaction fee (%)</label>
+          <input id="txPct" name="txPct" type="number" min="0" step="0.01" value="6.5">
+        </div>
+        <div class="field">
+          <label for="listUsd">Listing fee (USD per item)</label>
+          <input id="listUsd" name="listUsd" type="number" min="0" step="0.01" value="0.20">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="procPct">Processing fee (%)</label>
+          <input id="procPct" name="procPct" type="number" min="0" step="0.01" value="3">
+        </div>
+        <div class="field">
+          <label for="procFixed">Processing fixed fee (<span id="fixed-cc">USD</span>)</label>
+          <input id="procFixed" name="procFixed" type="number" min="0" step="0.01" value="0.25">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="regPct">Regulatory fee (%)</label>
+          <input id="regPct" name="regPct" type="number" min="0" step="0.01" value="0">
+        </div>
+        <div class="field">
+          <label for="capUsd">Offsite Ads cap (USD)</label>
+          <input id="capUsd" name="capUsd" type="number" min="0" step="1" value="100">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="convPct">Currency conversion (%)</label>
+          <input id="convPct" name="convPct" type="number" min="0" step="0.01" value="2.5">
+        </div>
+        <div class="field" style="align-self:end">
+          <button class="btn ghost block" type="button" id="reset-rates">Reset to Etsy's rates</button>
+        </div>
+      </div>
+      <div class="hint" id="rates-hint"></div>
+    </details>
+  </form>
+
+  <div class="preview">
+    <div class="panel" aria-live="polite">
+      <div class="result-grid" id="ef-stats"></div>
+      <div id="ef-msg"></div>
+      <div class="table-wrap" style="margin-top:12px">
+        <table class="ef-lines" id="ef-lines"></table>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Find your price</h2>
+      <div class="ef-rev">
+        <div class="field" style="margin:0">
+          <span class="label" id="target-label">I want</span>
+          <div class="seg" role="radiogroup" aria-labelledby="target-label">
+            <label><input type="radio" name="target" value="profit" form="ef-rev-form" checked>Profit</label>
+            <label><input type="radio" name="target" value="margin" form="ef-rev-form">Margin</label>
+          </div>
+        </div>
+        <div class="field" style="margin:0">
+          <label for="targetVal" id="target-val-label">Profit per order</label>
+          <div class="ef-input-unit"><input id="targetVal" name="targetVal" type="number" step="0.01" value="10" inputmode="decimal" form="ef-rev-form"><span id="target-unit">USD</span></div>
+        </div>
+      </div>
+      <form id="ef-rev-form" onsubmit="return false"></form>
+      <div id="ef-rev-out" aria-live="polite" style="margin-top:12px"></div>
+      <p class="small muted">Everything else stays as you entered it (shipping, quantity, tax, costs and fees); only the item price changes.</p>
+    </div>
+  </div>
+</div>
+
+<section class="content">
+  <h2>How Etsy works out each fee</h2>
+  <p>Etsy charges most fees as a percentage of the <strong>order total</strong>: the item price times quantity, plus the shipping and gift wrap the buyer pays. The one exception is the payment processing fee, which is charged on everything the buyer pays, including sales tax or VAT that Etsy collects. These are the fees for a seller whose payment account is in the US; the calculator swaps in your country's numbers.</p>
+  <div class="table-wrap">
+    <table class="ef-table">
+      <thead><tr><th>Fee</th><th>Rate</th><th>Charged on</th></tr></thead>
+      <tbody>
+        <tr><td>Listing fee</td><td>US$0.20</td><td>Each listing you publish (it lasts 4 months), and again for every extra item sold, because a sold listing auto-renews</td></tr>
+        <tr><td>Transaction fee</td><td>6.5%</td><td>Item price + shipping + gift wrap. Not on sales tax Etsy collects</td></tr>
+        <tr><td>Payment processing</td><td>3% + US$0.25 in the US. Varies by country, from 3% to 6% plus a fixed amount</td><td>The whole amount the buyer pays, including shipping and tax, once per order</td></tr>
+        <tr><td>Offsite Ads</td><td>15% or 12%, max US$100 per order</td><td>Order total, only when the buyer came from an Etsy ad on another site in the last 30 days</td></tr>
+        <tr><td>Regulatory operating fee</td><td>0.05% to 1.97%, only in some countries</td><td>Order total (item + shipping + gift wrap), excluding tax Etsy collects</td></tr>
+        <tr><td>Currency conversion</td><td>2.5%</td><td>The sale, when your listing currency differs from your payment account currency</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>A worked example for a US seller: a $25 item with $5 shipping and no tax has an order total of $30. The transaction fee is 6.5% × $30 = $1.95. Processing is 3% × $30 + $0.25 = $1.15. Add the $0.20 listing fee and Etsy keeps $3.30, which is 11% of the order. If the same buyer arrived through an Offsite Ad at 15%, another $4.50 goes on top, so fees would be $7.80, or 26%.</p>
+  <p>Each line in the calculator shows its formula with your numbers, and each fee is rounded to the cent the way it appears on your Etsy statement. Fees are deducted from your payment account balance, so the money you are paid out is the order total minus these fees.</p>
+
+  <h2>How to price for profit</h2>
+  <ol>
+    <li><strong>Add up the real cost of one order.</strong> The item (or the print provider's base price), the postage you pay, packaging, and what you spend on Etsy Ads for each sale. Ad spend is easy to forget: if you spend $30 a month on ads and they bring 10 sales, that's $3 a sale.</li>
+    <li><strong>Pick a target.</strong> A fixed profit per order (say $10) is good for low-priced items. A margin (profit as a share of the order total) is better when you compare products at different prices.</li>
+    <li><strong>Let the price finder do the maths.</strong> You can't just add your fees to your cost, because the fees grow when you raise the price. The finder searches for the lowest item price where the profit after every fee reaches your target, and shows the check.</li>
+    <li><strong>Check the break-even price.</strong> That's the price where you make exactly zero. Selling below it loses money on every order, even before your time is counted.</li>
+  </ol>
+  <p>Three things that often surprise new sellers. First, fixed fees hurt cheap items: on a $5 sticker a US seller pays $0.20 + $0.25 in fixed fees, already 9% before any percentage. Bundles help. Second, free shipping doesn't save fees: Etsy charges the same percentage whether the money is in the item price or the shipping. Third, one Offsite Ads sale can wipe out the profit on a low-margin item, so price with a 12% or 15% sale in mind, or opt out while you can.</p>
+
+  <h2>Print-on-demand on Etsy</h2>
+  <p>With print-on-demand, your print provider (Printful, Printify, Gelato and others) charges you a base price for the product and a shipping charge for each order, and ships it straight to your buyer. Switch the calculator to print-on-demand mode and enter those two numbers from your provider's dashboard for the exact product, size and destination; they change by variant and by country, so check the one you're pricing. Packaging is left out because the provider packs the order. Remember that providers may also charge sales tax or VAT on what they bill you in some countries.</p>
+  <p class="small muted">Etsy changes its fees from time to time. The rates here were checked against Etsy's <a href="https://www.etsy.com/legal/fees" rel="nofollow noopener" target="_blank">fees policy</a>, its <a href="https://help.etsy.com/hc/en-us/articles/115015628847-What-are-Payment-Processing-Fees-for-Selling-on-Etsy" rel="nofollow noopener" target="_blank">payment processing fee page</a> and its <a href="https://help.etsy.com/hc/en-us/articles/1500011073202-What-is-a-Regulatory-Operating-Fee" rel="nofollow noopener" target="_blank">regulatory operating fee page</a> on the date shown below. If something has changed, edit it under "Etsy's rates". This calculator is independent and not affiliated with Etsy.</p>
+</section>

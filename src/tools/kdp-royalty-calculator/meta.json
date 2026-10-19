@@ -1,0 +1,76 @@
+{
+  "slug": "kdp-royalty-calculator",
+  "category": "kdp",
+  "order": 2,
+  "title": "KDP Royalty Calculator 2026: Paperback, Hardcover & eBook",
+  "h1": "KDP royalty calculator",
+  "description": "KDP printing cost, royalty per sale and minimum price for paperbacks, hardcovers and eBooks, with the 50/60% threshold and the 2026 eBook bands.",
+  "intro": "See what each sale earns on Amazon KDP before you set a price. Enter your book's details to get the printing cost, royalty rate, royalty per copy, minimum list price and the price you need for the royalty you want, for paperbacks, hardcovers and eBooks, with the rates KDP uses in 2026.",
+  "card": "Printing cost, royalty per sale and the best list price for print and eBooks.",
+  "free": "Everything",
+  "related": [
+    "kdp-cover-calculator",
+    "isbn-barcode-generator"
+  ],
+  "scripts": [
+    "assets/kdp.js",
+    "kdp-royalty-calculator/calc.js"
+  ],
+  "lastReviewed": "2026-10-19",
+  "sources": [
+    {
+      "name": "KDP: paperback and hardcover royalty",
+      "url": "https://kdp.amazon.com/en_US/help/topic/G201834330"
+    },
+    {
+      "name": "KDP: print royalty and Expanded Distribution",
+      "url": "https://kdp.amazon.com/en_US/help/topic/G8BKPU9AGVZSF9QF"
+    },
+    {
+      "name": "KDP: paperback printing cost",
+      "url": "https://kdp.amazon.com/en_US/help/topic/G201834340"
+    },
+    {
+      "name": "KDP: hardcover printing cost",
+      "url": "https://kdp.amazon.com/en_US/help/topic/GHT976ZKSKUXBB6H"
+    },
+    {
+      "name": "KDP: eBook royalties and delivery costs",
+      "url": "https://kdp.amazon.com/en_US/help/topic/G200634500"
+    },
+    {
+      "name": "KDP: eBook list price requirements",
+      "url": "https://kdp.amazon.com/en_US/help/topic/G200634560"
+    }
+  ],
+  "faq": [
+    {
+      "q": "How are KDP paperback royalties calculated?",
+      "a": "Royalty = royalty rate × list price − printing cost. The rate is 60% at or above the marketplace threshold ($9.99 on Amazon.com) and 50% below it. A 300-page black-and-white 6 × 9 in paperback costs $4.60 to print in the US, so at $9.99 it earns 0.60 × 9.99 − 4.60 = $1.39 per copy."
+    },
+    {
+      "q": "Why does a $9.98 book earn so much less than a $9.99 one?",
+      "a": "Because $9.99 is the US threshold for the 60% rate. Below it the rate drops to 50%. KDP's own example: a book that costs $4.60 to print earns $1.39 at $9.99 but only $0.39 at $9.98. Each marketplace has its own threshold, for example 7.99 GBP on Amazon.co.uk and 9.99 EUR in the EU stores."
+    },
+    {
+      "q": "How much does KDP charge to print a book?",
+      "a": "A fixed charge plus a per-page charge that depends on the marketplace, ink, paper and whether the trim is regular or large. On Amazon.com a black-and-white paperback over 110 pages on a regular trim costs $1.00 + $0.012 per page, so 300 pages cost $4.60. The same book as a hardcover costs $5.65 + $0.012 per page, or $9.25."
+    },
+    {
+      "q": "What is the minimum list price for a KDP paperback?",
+      "a": "The price where your royalty reaches zero: printing cost ÷ royalty rate. For a $4.60 book that is $9.20 at the 50% rate. Expanded Distribution pays 40%, so it needs a higher price: $4.60 ÷ 0.40 = $11.50."
+    },
+    {
+      "q": "Should I choose the 35% or 70% eBook royalty?",
+      "a": "Usually 70%, if your price is inside the 70% band ($2.99–$12.99 on Amazon.com since July 7, 2026) and at least 20% below your print edition. The 70% option deducts a delivery cost based on file size ($0.15 per MB in the US), so very large, cheap eBooks can earn more on 35%. The calculator shows both."
+    },
+    {
+      "q": "Is VAT taken out of my KDP royalty?",
+      "a": "For eBooks in VAT stores such as Amazon.co.uk and Amazon.de, the list price includes VAT and KDP takes it off before applying 35% or 70%, so enter your VAT rate to see the real royalty. For print books you set the price without VAT and Amazon adds VAT on top, so the royalty is worked out on the price you enter."
+    },
+    {
+      "q": "What changed in KDP royalties in 2025 and 2026?",
+      "a": "In June 2025 KDP started paying 50% instead of 60% on print books priced below the threshold, and lowered some color printing costs. From July 7, 2026, the top of the US 70% eBook band rose from $9.99 to $12.99, and KDP says other marketplaces changed in the same way."
+    }
+  ]
+}
