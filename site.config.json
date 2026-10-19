@@ -10,7 +10,8 @@
   },
   "analytics": {
     "counterNamespace": "bleedline-icelandic123",
-    "cloudflareToken": ""
+    "cloudflareToken": "",
+    "countHost": "icelandic123.github.io"
   },
   "googleSiteVerification": "",
   "contactEmail": ""

@@ -165,9 +165,9 @@
   BL.blobBytes = function (blob) { return blob.arrayBuffer().then(function (b) { return new Uint8Array(b); }); };
 
   // Visitor counts: a public, cookie-free counter (abacus.jasoncameron.dev) that stores numbers only.
-  // It only runs on the live host, so local builds and tests don't add to the counts.
+  // It only runs on analytics.countHost, so local builds and tests don't add to the counts.
   var an = cfg.analytics || {};
-  var live = !!(an.counterNamespace && cfg.host && location.hostname === cfg.host);
+  var live = !!(an.counterNamespace && an.countHost && location.hostname === an.countHost);
   function hit(key) {
     if (!live) return;
     try { fetch('https://abacus.jasoncameron.dev/hit/' + an.counterNamespace + '/' + key, { mode: 'cors', keepalive: true }).catch(function () {}); } catch (e) {}
