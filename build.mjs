@@ -76,6 +76,8 @@ function card(t, root) {
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 fs.cpSync(path.join(SRC, 'assets'), path.join(OUT, 'assets'), { recursive: true });
+// Plain static files served as-is (e.g. pins/ images hosted for other experiments; nothing links to them).
+if (fs.existsSync(path.join(SRC, 'static'))) fs.cpSync(path.join(SRC, 'static'), OUT, { recursive: true });
 const urls = [];
 
 // Tool pages.
